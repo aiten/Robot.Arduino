@@ -11,7 +11,6 @@
 
 #include "Config.h"
 #include "Drive.h"
-#include "MqttClient.h"
 #include "SetupPage.h"
 
 String eepromStringBuffer[6];
@@ -40,8 +39,7 @@ void setup(void)
 
   auto configString = eepromConfig.ReadStrings();
 
-  String deviceName = configString[EConfigEEpromIdx::DeviceNameIdx];
-  DeviceName = deviceName;
+  DeviceName = configString[EConfigEEpromIdx::DeviceNameIdx];
   MqttBroker = configString[EConfigEEpromIdx::MqttBrokerIdx];
   MqttUser = configString[EConfigEEpromIdx::MqttUserIdx];
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];

@@ -1,8 +1,6 @@
 #include <ArduinoJson.h>
-#include <arduino.h>
-#include <cstdint>
 
-#include "MqttClient.h"
+#include "config.h"
 
 uint32_t defaultSpeed = 255;
 uint32_t defaultDuration = 250;

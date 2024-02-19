@@ -1,25 +1,31 @@
+#include <EEPROM.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+
+#include <EepromConfig.h>
 #include <PicoMQTT.h>
+#include <SetupWiFi.h>
+#include <WiFiClient.h>
 
 #if __has_include("config.h")
 #include "config.h"
 #endif
 
-#ifndef WIFI_SSID
-#define WIFI_SSID "Robot"
-#endif
-
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD "HTLLeonding"
-#endif
-
 #define MQTT_USER "mqttDevice"
 #define MQTT_PASSWORD "mqttDevice"
+
+String eepromStringBuffer[6];
+
+EepromConfig eepromConfig(2, 0, eepromStringBuffer);
+
+ESP8266WebServer server(80);
+SetupWiFi setupWiFi("RobotBroker", eepromConfig, server);
 
 class MQTT : public PicoMQTT::Server
 {
 protected:
-  PicoMQTT::ConnectReturnCode auth(const char *client_id, const char *username,
-                                   const char *password) override
+  PicoMQTT::ConnectReturnCode auth(const char *client_id, const char *username, const char *password) override
   {
     // only accept client IDs which are 3 chars or longer
     if (String(client_id).length() < 3)
@@ -35,8 +41,7 @@ protected:
     }
 
     // accept two user/password combinations
-    if (((String(username) == MQTT_USER) &&
-         (String(password) == MQTT_PASSWORD)))
+    if (((String(username) == MQTT_USER) && (String(password) == MQTT_PASSWORD)))
     {
       return PicoMQTT::CRC_ACCEPTED;
     }
@@ -48,23 +53,32 @@ protected:
 
 void setup()
 {
+  Serial.begin(115200); // Initialising if(DEBUG)Serial Monitor
   // Setup serial
-  Serial.begin(115200);
 
-  // Connect to WiFi
-  Serial.printf("Connecting to WiFi %s\n", WIFI_SSID);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-  }
-  Serial.printf("WiFi connected, IP: %s\n", WiFi.localIP().toString().c_str());
+  EEPROM.begin(512);
+
+  setupWiFi.Setup();
 
   mqtt.begin();
+
+  pinMode(LED_BUILTIN, OUTPUT);
 }
+
+long until = 0;
+bool ledOnOff = false;
 
 void loop()
 {
+  server.handleClient();
+  MDNS.update();
   mqtt.loop();
+
+  if (millis() > until)
+  {
+
+    digitalWrite(LED_BUILTIN, ledOnOff);
+    ledOnOff = !ledOnOff;
+    until = millis() + 1000;
+  }
 }

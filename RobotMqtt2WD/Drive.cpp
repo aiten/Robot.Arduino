@@ -1,10 +1,7 @@
 #include <ArduinoJson.h>
-#include <EspMQTTClient.h>
-#include <arduino.h>
-#include <cstdint>
 
 #include "Drive.h"
-#include "MqttClient.h"
+#include "Config.h"
 
 Motor motor1(D2, D1, D6);
 Motor motor2(D4, D3, D7);
