@@ -246,7 +246,7 @@ void SetupWiFi::ConfigureWebServer()
 String SetupWiFi::GetHtmlNetworks()
 {
 	String st = "<ol>";
-	for (int i = 0; i < _foundWLans; ++i)
+	for (int i = 0; i < (int) _foundWLans; ++i)
 	{
 		// Print SSID and RSSI for each network found
 		st += "<li>";

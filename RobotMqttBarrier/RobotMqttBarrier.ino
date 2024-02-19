@@ -1,7 +1,7 @@
+#include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#include <EEPROM.h>
 #include <EepromConfig.h>
 #include <SetupWiFi.h>
 #include <WiFiClient.h>
@@ -10,7 +10,6 @@
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
-#include "MqttClient.h"
 #include "SetupPage.h"
 
 String eepromStringBuffer[6];
@@ -27,12 +26,10 @@ SetupPage setupWiFi("RobotBarrier", eepromConfig, server);
 
 #include "Ampel.h"
 
-Ampel ampel[] =
-{
-  Ampel(D1, D2, D3, 0),
-  Ampel(D4, D5, D6, 1),
+Ampel ampel[] = {
+    Ampel(D1, D2, D3, 0),
+    Ampel(D4, D5, D6, 1),
 };
-
 
 void setup(void)
 {
@@ -42,10 +39,9 @@ void setup(void)
 
   setupWiFi.Setup();
 
-    auto configString = eepromConfig.ReadStrings();
+  auto configString = eepromConfig.ReadStrings();
 
-  String deviceName = configString[EConfigEEpromIdx::DeviceNameIdx];
-  DeviceName = deviceName;
+  DeviceName = configString[EConfigEEpromIdx::DeviceNameIdx];
   MqttBroker = configString[EConfigEEpromIdx::MqttBrokerIdx];
   MqttUser = configString[EConfigEEpromIdx::MqttUserIdx];
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
@@ -67,24 +63,24 @@ void loop(void)
   client.loop();
   server.handleClient();
   MDNS.update();
-  
+
   for (uint8_t i = 0; i < sizeof(ampel) / sizeof(Ampel); i++)
   {
     ampel[i].Poll();
-/*
-    if (ampel[i].IsRed() && ampel[i].PhaseSinceTime() > 20000)
-    {
-      Serial.println("ToGreen");      
-      ampel[i].ToGreen();
-    }
-    else if (ampel[i].IsGreen() && ampel[i].PhaseSinceTime() > 30000)
-    {
-      Serial.println("ToRead");      
-      ampel[i].ToRed();
-    }
-    */
+    /*
+        if (ampel[i].IsRed() && ampel[i].PhaseSinceTime() > 20000)
+        {
+          Serial.println("ToGreen");
+          ampel[i].ToGreen();
+        }
+        else if (ampel[i].IsGreen() && ampel[i].PhaseSinceTime() > 30000)
+        {
+          Serial.println("ToRead");
+          ampel[i].ToRed();
+        }
+        */
   }
-  
+
   if (until <= millis())
   {
     until = millis() + 60000;

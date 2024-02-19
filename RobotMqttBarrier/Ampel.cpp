@@ -8,11 +8,8 @@
 */
 
 #include <ArduinoJson.h>
-#include <EspMQTTClient.h>
-#include <arduino.h>
-#include <cstdint>
 
-#include "MqttClient.h"
+#include "config.h"
 
 #include "Ampel.h"
 

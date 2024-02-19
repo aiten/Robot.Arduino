@@ -1,13 +1,10 @@
 #include <ArduinoJson.h>
-#include <arduino.h>
-#include <cstdint>
 
-#include "MqttClient.h"
+#include "config.h"
 
 EspMQTTClient client;
 
-bool SetAmpel(const char *msg, const String &payload, uint8_t &idx, bool &toRed,
-              bool &toGreen, uint32_t delayTime)
+bool SetAmpel(const char *msg, const String &payload, uint8_t &idx, bool &toRed, bool &toGreen, uint32_t &delayTime)
 {
   JsonDocument doc;
   DeserializationError error = deserializeJson(doc, payload);
@@ -29,23 +26,29 @@ bool SetAmpel(const char *msg, const String &payload, uint8_t &idx, bool &toRed,
 
 void onConnectionEstablished()
 {
-  client.subscribe(MQTT_CMND + "/reset", [](const String &) {
-    // setupWiFi.LeaveNetwork();
-    Serial.println("Reset WiFi connection: please reboot");
-  });
+  client.subscribe(MQTT_CMND + "/reset",
+                   [](const String &)
+                   {
+                     // setupWiFi.LeaveNetwork();
+                     Serial.println("Reset WiFi connection: please reboot");
+                   });
 
-  client.subscribe(MQTT_CMND + "/set", [](const String &payload) {
-    uint8_t idx;
-    bool toRed;
-    bool toGreen;
-    uint32_t delay;
+  client.subscribe(MQTT_CMND + "/set",
+                   [](const String &payload)
+                   {
+                     uint8_t idx;
+                     bool toRed;
+                     bool toGreen;
+                     uint32_t delay;
 
-    if (SetAmpel("set", payload, idx, toRed, toGreen,delay))
-    {
-      if (toRed) ampel[idx].ToRed(delay);
-      else if (toGreen) ampel[idx].ToGreen(delay);
-    }
-  });
+                     if (SetAmpel("set", payload, idx, toRed, toGreen, delay))
+                     {
+                       if (toRed)
+                         ampel[idx].ToRed(delay);
+                       else if (toGreen)
+                         ampel[idx].ToGreen(delay);
+                     }
+                   });
 
   client.publish(MQTT_DISCOVERY + "/config", WiFi.localIP().toString().c_str());
 }
