@@ -12,14 +12,14 @@
 #include "Config.h"
 #include "SetupPage.h"
 
-String eepromStringBuffer[6];
+String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
 
 String DeviceName;
 String MqttBroker;
 String MqttUser;
 String MqttPwd;
 
-EepromConfig eepromConfig(6, 0, eepromStringBuffer);
+EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
 SetupPage setupWiFi("RobotBarrier", eepromConfig, server);
@@ -56,11 +56,9 @@ void setup(void)
   ampel[0].SetPhase(Ampel::Green);
 }
 
-uint32_t until = 0;
-
 void loop(void)
 {
-  client.loop();
+  MqttClientloop();
   server.handleClient();
   MDNS.update();
 
@@ -79,11 +77,5 @@ void loop(void)
           ampel[i].ToRed();
         }
         */
-  }
-
-  if (until <= millis())
-  {
-    until = millis() + 60000;
-    Serial.println("wait ...");
   }
 }

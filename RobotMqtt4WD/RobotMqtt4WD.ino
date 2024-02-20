@@ -13,14 +13,14 @@
 #include "Drive.h"
 #include "SetupPage.h"
 
-String eepromStringBuffer[6];
+String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
 
 String DeviceName;
 String MqttBroker;
 String MqttUser;
 String MqttPwd;
 
-EepromConfig eepromConfig(6, 0, eepromStringBuffer);
+EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
 SetupPage setupWiFi("Robot4WD", eepromConfig, server);
@@ -45,21 +45,14 @@ void setup(void)
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
   client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  client.setMqttClientName(DeviceName.c_str());
   client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
 }
 
-uint32_t until = 0;
-
 void loop(void)
 {
-  client.loop();
+  MqttClientloop();
   server.handleClient();
   drive.Poll();
   MDNS.update();
-
-  if (until <= millis())
-  {
-    until = millis() + 60000;
-    Serial.println("wait ...");
-  }
 }

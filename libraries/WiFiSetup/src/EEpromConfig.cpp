@@ -53,6 +53,10 @@ String *EepromConfig::ReadStrings()
   {
     canRead = 0;
   }
+  else if (canRead > _count)
+  {
+	  canRead = _count;
+  }
 
   for (uint8_t i = 0; i < canRead; i++)
   {

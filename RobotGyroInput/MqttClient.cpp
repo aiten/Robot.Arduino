@@ -13,6 +13,7 @@ void PublishDiscovery()
   doc["deviceName"] = DeviceName;
   doc["mqttBroker"] = MqttBroker;
   doc["mqttUser"] = MqttUser;
+  doc["sendTo"] = SendTo;
 
   String output;
   serializeJson(doc, output);
@@ -20,7 +21,22 @@ void PublishDiscovery()
   client.publish(MQTT_DISCOVERY + "/config", output.c_str());
 }
 
-bool SetAmpel(const char *msg, const String &payload, uint8_t &idx, bool &toRed, bool &toGreen, uint32_t &delayTime)
+void PublishPing()
+{
+  JsonDocument doc;
+
+  doc["ip"] = WiFi.localIP().toString();
+  doc["deviceName"] = DeviceName;
+
+  String output;
+  serializeJson(doc, output);
+
+  client.publish(MQTT_SENDTO_CMND + "/ping", output.c_str());
+}
+
+/*
+bool SetAmpel(const char *msg, const String &payload, uint8_t &idx, bool &toRed,
+              bool &toGreen, uint32_t delayTime)
 {
   JsonDocument doc;
   DeserializationError error = deserializeJson(doc, payload);
@@ -39,32 +55,28 @@ bool SetAmpel(const char *msg, const String &payload, uint8_t &idx, bool &toRed,
 
   return true;
 }
-
+*/
 void onConnectionEstablished()
 {
-  client.subscribe(MQTT_CMND + "/reset",
-                   [](const String &)
-                   {
-                     // setupWiFi.LeaveNetwork();
-                     Serial.println("Reset WiFi connection: please reboot");
-                   });
+  client.subscribe(MQTT_CMND + "/reset", [](const String &) {
+    // setupWiFi.LeaveNetwork();
+    Serial.println("Reset WiFi connection: please reboot");
+  });
 
-  client.subscribe(MQTT_CMND + "/set",
-                   [](const String &payload)
-                   {
-                     uint8_t idx;
-                     bool toRed;
-                     bool toGreen;
-                     uint32_t delay;
+  client.subscribe(MQTT_CMND + "/set", [](const String &payload) {
+/*
+    uint8_t idx;
+    bool toRed;
+    bool toGreen;
+    uint32_t delay;
 
-                     if (SetAmpel("set", payload, idx, toRed, toGreen, delay))
-                     {
-                       if (toRed)
-                         ampel[idx].ToRed(delay);
-                       else if (toGreen)
-                         ampel[idx].ToGreen(delay);
-                     }
-                   });
+    if (SetAmpel("set", payload, idx, toRed, toGreen,delay))
+    {
+      if (toRed) ampel[idx].ToRed(delay);
+      else if (toGreen) ampel[idx].ToGreen(delay);
+    }
+*/    
+  });
 
   PublishDiscovery();
 }
@@ -80,5 +92,6 @@ void MqttClientloop(void)
     until = millis() + 60000;
     Serial.println("wait ...");
     PublishDiscovery();
+    PublishPing();
   }
 }

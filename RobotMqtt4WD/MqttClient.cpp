@@ -7,6 +7,22 @@ uint32_t defaultDuration = 250;
 
 EspMQTTClient client;
 
+void PublishDiscovery()
+{
+  JsonDocument doc;
+
+  doc["ip"] = WiFi.localIP().toString();
+  doc["upTime"] = millis()/1000;
+  doc["deviceName"] = DeviceName;
+  doc["mqttBroker"] = MqttBroker;
+  doc["mqttUser"] = MqttUser;
+
+  String output;
+  serializeJson(doc, output);
+
+  client.publish(MQTT_DISCOVERY + "/config", output.c_str());
+}
+
 bool GoOrDrive(const char *msg, const String &payload, uint16_t &direction, uint32_t &duration, uint8_t &speed)
 {
   JsonDocument doc;
@@ -86,13 +102,19 @@ void onConnectionEstablished()
                      client.publish(MQTT_STAT + "/duration", std::to_string(defaultDuration).c_str());
                    });
 
-  // Subscribe to "mytopic/wildcardtest/#" and display received message to Serial
-  // client.subscribe("robot/" ROBOTNAME "/wildcardtest/#", [](const String &topic, const String &payload) { Serial.println("(From wildcard) topic: " + topic + ", payload: " + payload); });
+  PublishDiscovery();
+}
 
-  client.publish(MQTT_DISCOVERY + "/config", WiFi.localIP().toString().c_str());
+void MqttClientloop(void)
+{
+  static uint32_t until = 0;
+  
+  client.loop();
 
-  // Execute delayed instructions
-  // client.executeDelayed(5 * 1000, []() {
-  //  client.publish("mytopic/wildcardtest/test123", "This is a message sent 5 seconds later");
-  //});
+  if (until <= millis())
+  {
+    until = millis() + 60000;
+    Serial.println("wait ...");
+    PublishDiscovery();
+  }
 }

@@ -10,6 +10,9 @@ enum EConfigEEpromIdx
   MqttBrokerIdx,
   MqttUserIdx,
   MqttPwdIdx,
+  SendToIdx,
+
+  SizeIdx          // to calculate max   
 };
 
 //////////////////////////////////////////
@@ -31,6 +34,7 @@ extern String DeviceName;
 extern String MqttBroker;
 extern String MqttUser;
 extern String MqttPwd;
+extern void MqttClientloop(void);
 
 //////////////////////////////////////////
 
