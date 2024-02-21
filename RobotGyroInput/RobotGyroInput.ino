@@ -11,6 +11,7 @@
 
 #include "Config.h"
 #include "SetupPage.h"
+#include "MPU6050.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
 
@@ -24,6 +25,8 @@ EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
 SetupPage setupWiFi("RobotGyroInput", eepromConfig, server);
+
+Adafruit_MPU6050 mpu;
 
 void setup(void)
 {
@@ -44,6 +47,7 @@ void setup(void)
   client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   client.setMqttClientName(DeviceName.c_str());
   client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  setupMPU6050();
 }
 
 void loop(void)
@@ -51,4 +55,5 @@ void loop(void)
   MqttClientloop();
   server.handleClient();
   MDNS.update();
+  loopMPU6050();
 }

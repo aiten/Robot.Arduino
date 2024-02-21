@@ -401,3 +401,6 @@ FodyWeavers.xsd
 /libraries/EspMQTTClient
 /libraries/PicoMQTT
 /libraries/PubSubClient
+/libraries/Adafruit_BusIO
+/libraries/Adafruit_MPU6050
+/libraries/Adafruit_Unified_Sensor

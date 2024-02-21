@@ -21,6 +21,10 @@ enum EConfigEEpromIdx
 #include <EspMQTTClient.h>
 #include "SetupPage.h"
 
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+
 //////////////////////////////////////////
 
 extern EepromConfig eepromConfig;
@@ -34,7 +38,10 @@ extern String MqttUser;
 extern String MqttPwd;
 extern String SendTo;
 
+extern Adafruit_MPU6050 mpu;
+
 extern void MqttClientloop(void);
+extern void PublishGo(uint direction, uint speed, uint duration);
 
 //////////////////////////////////////////
 
