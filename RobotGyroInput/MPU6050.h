@@ -6,19 +6,16 @@
 
 #include "PushButton.h"
 
-const uint8_t statusLed = LED_BUILTIN;
-const long SEND_INTERVAL = 100;
+const long SEND_INTERVAL = 150;
+const long SEND_INTERVAL_ADD = 150;   // add time to go
+const int MIN_SPEED = 60; 
 
 inline void LimitPublishGo(uint direction, uint speed, uint duration)
 {
   static bool _speed0Sent = false;
-  if (speed < 30)
+  if (speed < MIN_SPEED)
   {
     speed = 0;
-  }
-  else
-  {
-    speed = (uint)map((int)speed, 0, 255, 30, 255);
   }
 
   if (speed != 0 || _speed0Sent == false)
@@ -30,18 +27,14 @@ inline void LimitPublishGo(uint direction, uint speed, uint duration)
 
 inline void setupMPU6050()
 {
-  pinMode(statusLed, OUTPUT);
-
   // Try to initialize!
   if (!mpu.begin())
   {
     Serial.println("Failed to find MPU6050 chip");
+    statusLed.SetOnOffTime(75);
     while (1)
     {
-      digitalWrite(statusLed, LOW);
-      delay(75);
-      digitalWrite(statusLed, HIGH);
-      delay(75);
+      statusLed.Loop();
     }
     // never return
   }
@@ -122,10 +115,11 @@ inline void loopMPU6050()
   {
     // toggle state
     isOn = !isOn;
-    digitalWrite(statusLed, isOn);
+    //statusLed.SetOnOffTime(isOn ? 1000: 100);
+    statusLed.SetLed(isOn, 100000000);
   }
 
-  if (millis() > until)
+  if (millis() < until || !isOn)
   {
     return;
   }
@@ -136,36 +130,28 @@ inline void loopMPU6050()
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  // g.gyro.x: max +/- 12
-  auto x = map((uint)(g.gyro.x * 65535.0 / 12.0), 0, 65535, -255, 255);
-  auto y = map((uint)(g.gyro.y * 65535.0 / 12.0), 0, 65535, -255, 255);
+  // Calculation
+  // 0 position: x,y = 0, z = 9.81
+  // full forward (90Grad in x) x=9.81, y=0, z=0
+  // full backward (-90Grad in x) x=-9.81, y=0, z=0
+  // right (90Grad in y) x=0, y=9.81, y=0, z=0
+  // left (-90Grad in y) x=0, y=-9.81, y=0, z=0
+  // forward+right (90 in x, yin 90) x=sin(45)*9.81, y=cos(45)*9.81, z=0
+
+  auto myx = a.acceleration.x;
+  auto myy = a.acceleration.y;
+
+  auto gyro_x = (int)(myx * 100.0); // range -1000 to +1000
+  auto gyro_y = (int)(myy * 100.0); // range -1000 to +1000
+
+  gyro_x = min(max(gyro_x, -1000), 1000);
+  gyro_y = min(max(gyro_y, -1000), 1000);
+
+  auto x = map(gyro_x, -1000, 1000, -255, 255);
+  auto y = map(gyro_y, -1000, 1000, -255, 255);
 
   auto direction = (uint)(atan2(-x, y) / PI * 180.0) + 180;
   auto speed = (uint)min(255, (int)sqrt((double)x * x + (double)y * y));
 
-  LimitPublishGo(direction, speed, SEND_INTERVAL + 50);
-  /*
-
-  Serial.print("Acceleration X: ");
-  Serial.print(a.acceleration.x);
-  Serial.print(", Y: ");
-  Serial.print(a.acceleration.y);
-  Serial.print(", Z: ");
-  Serial.print(a.acceleration.z);
-  Serial.println(" m/s^2");
-
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(g.gyro.z);
-  Serial.println(" rad/s");
-
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println(" degC");
-
-  Serial.println();
-  */
+  LimitPublishGo(direction, speed, SEND_INTERVAL + SEND_INTERVAL_ADD);
 }

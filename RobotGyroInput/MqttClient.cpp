@@ -38,9 +38,13 @@ void PublishGo(uint direction, uint speed, uint duration)
 {
   JsonDocument doc;
 
+  static uint id = 0;
+
   doc["direction"] = direction;
   doc["speed"] = speed;
   doc["duration"] = duration;
+  doc["time"] = millis()/1000.0;
+  doc["id"] = id++;
 
   String output;
   serializeJson(doc, output);

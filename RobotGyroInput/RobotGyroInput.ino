@@ -5,6 +5,7 @@
 #include <EepromConfig.h>
 #include <SetupWiFi.h>
 #include <WiFiClient.h>
+#include <StatusLed.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
@@ -24,7 +25,9 @@ String SendTo;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotGyroInput", eepromConfig, server);
+SetupPage setupWiFi("RobotGyroInput", eepromConfig, server, LED_BUILTIN);
+
+StatusLed statusLed(LED_BUILTIN,500);
 
 Adafruit_MPU6050 mpu;
 
@@ -56,4 +59,5 @@ void loop(void)
   server.handleClient();
   MDNS.update();
   loopMPU6050();
+  statusLed.Loop();
 }

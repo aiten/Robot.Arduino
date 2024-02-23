@@ -18,6 +18,7 @@ enum EConfigEEpromIdx
 
 #include <EepromConfig.h>
 #include <EspMQTTClient.h>
+#include <StatusLed.h>
 #include "SetupPage.h"
 #include "Ampel.h"
 
@@ -27,6 +28,7 @@ extern EepromConfig eepromConfig;
 extern ESP8266WebServer server;
 extern SetupPage setupWiFi;
 extern EspMQTTClient client;
+extern StatusLed statusLed;
 
 extern String DeviceName;
 extern String MqttBroker;

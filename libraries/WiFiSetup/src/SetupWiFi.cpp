@@ -3,6 +3,7 @@
 #include <ESP8266WiFi.h>
 
 #include "SetupWiFi.h"
+#include "StatusLed.h"
 
 void SetupWiFi::Setup()
 {
@@ -41,6 +42,8 @@ void SetupWiFi::Setup()
 	}
 	else
 	{
+		StatusLed statusLed(_statusPin, 75);
+
 		Serial.println("Turning the HotSpot On");
 		SetupAP();
 		LaunchWebServer();
@@ -56,6 +59,7 @@ void SetupWiFi::Setup()
 				lastCh = millis();
 			}
 			_server.handleClient();
+			statusLed.Loop();
 		}
 	}
 }
@@ -65,6 +69,10 @@ bool SetupWiFi::TestWifi()
 	// test 10 sec
 
 	unsigned long testUntil = millis() + 10000;
+	unsigned long testNextUntil = 0;
+
+	StatusLed statusLed(_statusPin, 200);
+
 	Serial.println("Waiting for Wifi to connect");
 
 	while (testUntil > millis())
@@ -74,8 +82,15 @@ bool SetupWiFi::TestWifi()
 			Serial.println();
 			return true;
 		}
-		delay(500);
-		Serial.print("*");
+
+		if (testNextUntil < millis())
+		{
+			testNextUntil = millis() + 500;
+			Serial.print("*");
+		}
+
+		delay(25);
+		statusLed.Loop();
 	}
 
 	Serial.println();
@@ -166,18 +181,18 @@ void SetupWiFi::OnMainPage()
 	IPAddress ip = WiFi.softAPIP();
 	String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
 	String content = "<!DOCTYPE HTML>\r\n<html>Hello from ESP8266 at "
-		"<style> label { width:100px; display: inline-block; } </style>"
-		"<form action=\"/scan\" method=\"POST\"><input type=\"submit\" value=\"scan\"></form>";
+					 "<style> label { width:100px; display: inline-block; } </style>"
+					 "<form action=\"/scan\" method=\"POST\"><input type=\"submit\" value=\"scan\"></form>";
 	content += ipStr;
 	content += "<p>";
 	content += GetHtmlNetworks();
 	content += "</p><br />"
-		"<form method='get' action='setting'>"
-		"<label>SSID: </label><input name='ssid' value=\"" +
-		ssid + "\" length=32><input type=\"password\" name='pass' value=\"" + pwd + "\" length=64><br />";
+			   "<form method='get' action='setting'>"
+			   "<label>SSID: </label><input name='ssid' value=\"" +
+			   ssid + "\" length=32><input type=\"password\" name='pass' value=\"" + pwd + "\" length=64><br />";
 	content += ConfigureAddValues();
 	content += "<br /><input type='submit'></form>"
-		"</html>";
+			   "</html>";
 	_server.send(200, "text/html", content);
 }
 
@@ -210,11 +225,10 @@ void SetupWiFi::OnConfig()
 	_server.send(statusCode, "application/json", content);
 }
 
-bool SetupWiFi::StoreValues(String* configString)
+bool SetupWiFi::StoreValues(String *configString)
 {
 	configString[0] = _server.arg("ssid");
 	configString[1] = _server.arg("pass");
-
 
 	return (configString[0].length() > 0 && configString[1].length() > 0);
 }
@@ -235,18 +249,18 @@ void SetupWiFi::OnScan()
 void SetupWiFi::ConfigureWebServer()
 {
 	_server.on("/", [this]()
-		{ this->OnMainPage(); });
+			   { this->OnMainPage(); });
 	_server.on("/scan", [this]()
-		{ this->OnScan(); });
+			   { this->OnScan(); });
 
 	_server.on("/setting", [this]()
-		{ this->OnConfig(); });
+			   { this->OnConfig(); });
 }
 
 String SetupWiFi::GetHtmlNetworks()
 {
 	String st = "<ol>";
-	for (int i = 0; i < (int) _foundWLans; ++i)
+	for (int i = 0; i < (int)_foundWLans; ++i)
 	{
 		// Print SSID and RSSI for each network found
 		st += "<li>";

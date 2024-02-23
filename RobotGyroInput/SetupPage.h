@@ -12,7 +12,7 @@ private:
   typedef SetupWiFi super;
 
 public:
-  SetupPage(const char *nameSID, EepromConfig &config, ESP8266WebServer &server) : super(nameSID, config, server)
+  SetupPage(const char *nameSID, EepromConfig &config, ESP8266WebServer &server, uint8_t statusPin) : super(nameSID, config, server, statusPin)
   {
   }
 

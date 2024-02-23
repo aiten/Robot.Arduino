@@ -60,6 +60,8 @@ bool Drive::Go(uint16_t dir, uint32_t duration, uint8_t speed)
 
 void Drive::DriveTo(uint16_t dir, uint32_t duration, uint8_t speed)
 {
+  statusLed.ToggleNow(100);
+
   Serial.printf("DRIVE: driveto: dir=%u, duration=%u, speed=%u\n", (uint)dir, (uint)duration, (uint)speed);
   
   if (Start(dir, speed))
@@ -102,10 +104,15 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
     speed_r = speed;
   }
 
+#if defined SINGLE_LN298
+  SetPins(speed_l, D5, D6); // left
+  SetPins(speed_r, D7, D8); // right
+#elif  defined TWO_LN298
   SetPins(speed_l, D1, D2); // front left
   SetPins(speed_l, D3, D4); // rear right
   SetPins(speed_r, D6, D5); // front right
   SetPins(speed_r, D8, D7); // rear right
+#endif
 
   Serial.printf("DRIVE: right=%i, left=%i\n", (int)speed_r, (int)speed_l);
 

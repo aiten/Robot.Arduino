@@ -22,13 +22,15 @@ String MqttPwd;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotBarrier", eepromConfig, server);
+SetupPage setupWiFi("RobotBarrier", eepromConfig, server, LED_BUILTIN);
+
+StatusLed statusLed(LED_BUILTIN,500);
 
 #include "Ampel.h"
 
 Ampel ampel[] = {
     Ampel(D1, D2, D3, 0),
-    Ampel(D4, D5, D6, 1),
+    Ampel(D6, D7, D8, 1),
 };
 
 void setup(void)
@@ -61,6 +63,7 @@ void loop(void)
   MqttClientloop();
   server.handleClient();
   MDNS.update();
+  statusLed.Loop();  
 
   for (uint8_t i = 0; i < sizeof(ampel) / sizeof(Ampel); i++)
   {

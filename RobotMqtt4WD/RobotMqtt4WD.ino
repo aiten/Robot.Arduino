@@ -5,6 +5,7 @@
 #include <EepromConfig.h>
 #include <SetupWiFi.h>
 #include <WiFiClient.h>
+#include <StatusLed.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
@@ -23,7 +24,9 @@ String MqttPwd;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("Robot4WD", eepromConfig, server);
+SetupPage setupWiFi("Robot4WD", eepromConfig, server, LED_BUILTIN);
+
+StatusLed statusLed(LED_BUILTIN,500);
 
 Drive drive;
 
@@ -55,4 +58,5 @@ void loop(void)
   server.handleClient();
   drive.Poll();
   MDNS.update();
+  statusLed.Loop();
 }
