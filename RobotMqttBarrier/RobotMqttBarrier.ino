@@ -24,7 +24,8 @@ EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 ESP8266WebServer server(80);
 SetupPage setupWiFi("RobotBarrier", eepromConfig, server, LED_BUILTIN);
 
-StatusLed statusLed(LED_BUILTIN,500);
+StatusLed statusLed(LED_BUILTIN, 500);
+CPushButton pushButton(D5, LOW);
 
 #include "Ampel.h"
 
@@ -63,22 +64,32 @@ void loop(void)
   MqttClientloop();
   server.handleClient();
   MDNS.update();
-  statusLed.Loop();  
+  statusLed.Loop();
 
   for (uint8_t i = 0; i < sizeof(ampel) / sizeof(Ampel); i++)
   {
     ampel[i].Poll();
+
     /*
         if (ampel[i].IsRed() && ampel[i].PhaseSinceTime() > 20000)
         {
           Serial.println("ToGreen");
           ampel[i].ToGreen();
         }
-        else if (ampel[i].IsGreen() && ampel[i].PhaseSinceTime() > 30000)
-        {
-          Serial.println("ToRead");
-          ampel[i].ToRed();
-        }
-        */
+        else
+    */
+    if (ampel[i].IsGreen() && ampel[i].PhaseSinceTime() > 15000)
+    {
+      Serial.println("ToReed");
+      ampel[i].ToRed();
+    }
+  }
+
+  if (pushButton.IsOn())
+  {
+    static int idx = 0;
+    ampel[idx].ToGreen(2000);
+    idx = (idx + 1) % (sizeof(ampel) / sizeof(Ampel));
+    Serial.println("Button pressed");
   }
 }

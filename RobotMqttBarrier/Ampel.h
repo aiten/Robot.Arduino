@@ -12,7 +12,8 @@
 class Ampel
 {
 public:
-  enum Phases {
+  enum Phases
+  {
     Red = 0,
     RedYellow,
     Green,
@@ -94,7 +95,11 @@ public:
     }
     else if (_currentPhase == Phases::Green)
     {
-      _untilTime = millis() + max(stayOnGreenTime,(uint32_t) 1000);
+      auto untilTime = millis() + max(stayOnGreenTime, (uint32_t)1000);
+      if (_untilTime > untilTime)
+      {
+        _untilTime = untilTime;
+      }
       return true;
     }
     return false;
@@ -113,7 +118,11 @@ public:
     }
     else if (_currentPhase == Phases::Red)
     {
-      _untilTime = millis() + max(stayOnRedTime,(uint32_t)1000);
+      auto untilTime = millis() + max(stayOnRedTime, (uint32_t)1000);
+      if (_untilTime > untilTime)
+      {
+        _untilTime = untilTime;
+      }
       return true;
     }
     return false;
@@ -125,8 +134,7 @@ public:
   }
   bool IsGreen() const
   {
-    return _currentPhase >= Phases::Green &&
-           _currentPhase <= Phases::GreenBlinkOn4;
+    return _currentPhase >= Phases::Green && _currentPhase <= Phases::GreenBlinkOn4;
   }
 
   bool IsGotoRed() const
