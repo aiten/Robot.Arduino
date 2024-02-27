@@ -3,8 +3,8 @@
 #include "Drive.h"
 #include "Config.h"
 
-Motor motor1(D2, D1, D6);
-Motor motor2(D4, D3, D7);
+Motor motor1(D5, D6, D1);
+Motor motor2(D7, D8, D2);
 
 void Drive::Setup()
 {
@@ -66,6 +66,8 @@ bool Drive::Go(uint16_t dir, uint32_t duration, uint8_t speed)
 
 void Drive::DriveTo(uint16_t dir, uint32_t duration, uint8_t speed)
 {
+  statusLed.ToggleNow(100);
+
   Serial.printf("DRIVE: driveto: dir=%u, duration=%u, speed=%u\n", (uint)dir, (uint)duration, (uint)speed);
   
   if (Start(dir, speed))

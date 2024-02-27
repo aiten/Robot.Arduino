@@ -19,6 +19,7 @@ enum EConfigEEpromIdx
 
 #include <EepromConfig.h>
 #include <EspMQTTClient.h>
+#include <StatusLed.h>
 #include "SetupPage.h"
 #include "Drive.h"
 
@@ -29,6 +30,7 @@ extern ESP8266WebServer server;
 extern SetupPage setupWiFi;
 extern EspMQTTClient client;
 extern Drive drive;
+extern StatusLed statusLed;
 
 extern String DeviceName;
 extern String MqttBroker;
