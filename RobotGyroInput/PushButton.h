@@ -33,12 +33,15 @@ public:
 	{
 		_pin     = pin;
 		_onvalue = onValue;
-		pinMode(_pin, INPUT_PULLUP);
+    if (_pin != 0xff)
+    {
+		  pinMode(_pin, INPUT_PULLUP);
+    }
 	}
 
 	void Check()
 	{
-		bool isOn = digitalRead(_pin) == _onvalue;
+		bool isOn = IsPressed();
 		switch (_state)
 		{
 			case ButtonOff:
@@ -76,7 +79,7 @@ public:
 	{
 		// current state!!!!!
 		// use IsOn() 
-		return digitalRead(_pin) == _onvalue;
+		return _pin != 0xff && digitalRead(_pin) == _onvalue;
 	}
 
 	bool IsOn()
@@ -108,7 +111,7 @@ protected:
 	{
 		ButtonOff = 0,		// button not pressed, not waiting
 		ButtonPressed,		// report pressed if IsOn is called, Button still pressed, wait for Button Off
-		ButtonPressedOff,	// Pressed an released but not reported
+		ButtonPressedOff,	// Pressed and released but not reported
 		ExpectButtonOff		// reported on IsOn, wait for "Off"
 	};
 

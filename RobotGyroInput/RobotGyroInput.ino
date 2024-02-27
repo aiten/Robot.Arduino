@@ -25,9 +25,9 @@ String SendTo;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotGyroInput", eepromConfig, server, LED_BUILTIN);
+SetupPage setupWiFi("RobotGyroInput", eepromConfig, server, STATUS_LED_PIN);
 
-StatusLed statusLed(LED_BUILTIN,500);
+StatusLed statusLed(STATUS_LED_PIN,500);
 
 Adafruit_MPU6050 mpu;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Wire.h>
+
 // see: https://microcontrollerslab.com/mpu-6050-esp8266-nodemcu-oled/
 // GPIO5 (I2C SCL) => D1
 // GPIO4 (I2C SDA) => D2
@@ -27,6 +29,11 @@ inline void LimitPublishGo(uint direction, uint speed, uint duration)
 
 inline void setupMPU6050()
 {
+  #if defined(SDA_PIN)
+   // used for esp01
+  Wire.begin(SDA_PIN, SCL_PIN);
+  #endif  
+
   // Try to initialize!
   if (!mpu.begin())
   {
@@ -34,6 +41,7 @@ inline void setupMPU6050()
     statusLed.SetOnOffTime(75);
     while (1)
     {
+      delay(10);
       statusLed.Loop();
     }
     // never return
@@ -108,8 +116,8 @@ inline void setupMPU6050()
 inline void loopMPU6050()
 {
   static long until = 0;
-  static bool isOn = false;
-  static CPushButton pushButton(D3, LOW);
+  static bool isOn = PUSHBUTTON_ISON;
+  static CPushButton pushButton(PUSHBUTTON_PIN, LOW);
 
   if (pushButton.IsOn())
   {
@@ -150,7 +158,7 @@ inline void loopMPU6050()
   auto x = map(gyro_x, -1000, 1000, -255, 255);
   auto y = map(gyro_y, -1000, 1000, -255, 255);
 
-  auto direction = (uint)(atan2(-x, y) / PI * 180.0) + 180;
+  auto direction = (uint)(atan2(GYROCONVERT(x,y)) / PI * 180.0) + 180;
   auto speed = (uint)min(255, (int)sqrt((double)x * x + (double)y * y));
 
   LimitPublishGo(direction, speed, SEND_INTERVAL + SEND_INTERVAL_ADD);

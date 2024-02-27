@@ -17,6 +17,34 @@ enum EConfigEEpromIdx
 
 //////////////////////////////////////////
 
+
+#if defined(ARDUINO_ESP8266_ESP01)
+
+//use Board "Generic ESP8285" to get ARDUINO_ESP8266_ESP01 defined
+
+#define STATUS_LED_PIN 0xff
+#define PUSHBUTTON_PIN 0xff
+#define PUSHBUTTON_ISON true
+
+#define GYROCONVERT(x,y)  -y,x
+
+#define SDA_PIN 0
+#define SCL_PIN 2
+
+#else
+
+// define for e.g. LOLIN(WEMOS) D1
+
+#define STATUS_LED_PIN LED_BUILTIN
+#define PUSHBUTTON_PIN D3
+#define PUSHBUTTON_ISON false
+
+#define GYROCONVERT(x,y)  x,y
+
+#endif
+
+//////////////////////////////////////////
+
 #include <EepromConfig.h>
 #include <EspMQTTClient.h>
 #include <StatusLed.h>
