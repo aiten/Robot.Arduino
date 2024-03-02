@@ -33,7 +33,9 @@ Adafruit_MPU6050 mpu;
 
 void setup(void)
 {
+#if !defined(DONOTUSESERIAL)    // use RX,TX on esp01
   Serial.begin(115200); // Initialising if(DEBUG)Serial Monitor
+#endif
 
   EEPROM.begin(512);
 

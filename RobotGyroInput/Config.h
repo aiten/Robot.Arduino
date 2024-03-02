@@ -22,9 +22,10 @@ enum EConfigEEpromIdx
 
 //use Board "Generic ESP8285" to get ARDUINO_ESP8266_ESP01 defined
 
-#define STATUS_LED_PIN 0xff
-#define PUSHBUTTON_PIN 0xff
+#define STATUS_LED_PIN 1 // 0xff
+#define PUSHBUTTON_PIN 3 // 0xff
 #define PUSHBUTTON_ISON true
+#define DONOTUSESERIAL
 
 #define GYROCONVERT(x,y)  -y,x
 
