@@ -15,7 +15,6 @@ enum EConfigEEpromIdx
   MqttBrokerIdx,
   MqttUserIdx,
   MqttPwdIdx,
-  SendToIdx,
 
   SizeIdx          // to calculate max   
 };

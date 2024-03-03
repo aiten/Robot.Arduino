@@ -139,10 +139,15 @@ void Drive::SetPins(int16_t speed, uint8_t pinFW, uint8_t pinBW)
 void Drive::Stop()
 {
   Serial.println("DRIVE: stop");
+#if defined SINGLE_LN298
+  SetPins(0, D5, D6); // left
+  SetPins(0, D7, D8); // right
+#elif  defined TWO_LN298
   SetPins(0, D1, D2); // front left
   SetPins(0, D3, D4); // rear right
   SetPins(0, D6, D5); // front right
   SetPins(0, D8, D7); // rear right
+#endif
   digitalWrite(ONOFF_PIN, LOW);
 
   JsonDocument doc;
