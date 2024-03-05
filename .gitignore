@@ -405,3 +405,4 @@ FodyWeavers.xsd
 /libraries/Adafruit_MPU6050
 /libraries/Adafruit_Unified_Sensor
 /libraries/QMC5883LCompass
+/RobotMqtt2WD/*.bak

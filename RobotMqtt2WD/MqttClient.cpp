@@ -82,26 +82,6 @@ void onConnectionEstablished()
 
   client.subscribe(MQTT_CMND + "/stop", [](const String &payload) { drive.Go(0, 0, 0); });
 
-  client.subscribe(MQTT_CMND + "/speed",
-                   [](const String &payload)
-                   {
-                     defaultSpeed = std::strtoul(payload.c_str(), NULL, 0);
-                     char buffer[128];
-                     snprintf(buffer, sizeof(buffer), "ROBOT: setspeed: speed=%u", defaultSpeed);
-                     Serial.println(buffer);
-                     client.publish(MQTT_STAT + "/speed", std::to_string(defaultSpeed).c_str());
-                   });
-
-  client.subscribe(MQTT_CMND + "/duration",
-                   [](const String &payload)
-                   {
-                     defaultDuration = std::strtoul(payload.c_str(), NULL, 0);
-                     char buffer[128];
-                     snprintf(buffer, sizeof(buffer), "ROBOT: setduration: defaultDuration=%u", defaultDuration);
-                     Serial.println(buffer);
-                     client.publish(MQTT_STAT + "/duration", std::to_string(defaultDuration).c_str());
-                   });
-
   PublishDiscovery();
 }
 
