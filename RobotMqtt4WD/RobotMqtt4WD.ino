@@ -2,10 +2,12 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include <ArduinoOTA.h>
 #include <EepromConfig.h>
 #include <SetupWiFi.h>
 #include <WiFiClient.h>
 #include <StatusLed.h>
+#include <SetupOTA.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
@@ -47,6 +49,8 @@ void setup(void)
   MqttUser = configString[EConfigEEpromIdx::MqttUserIdx];
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
+  setupOTA(DeviceName.c_str(),"Robot");
+
   client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   client.setMqttClientName(DeviceName.c_str());
   client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
@@ -59,4 +63,5 @@ void loop(void)
   drive.Poll();
   MDNS.update();
   statusLed.Loop();
+  loopOTA();
 }
