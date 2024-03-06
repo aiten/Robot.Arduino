@@ -6,7 +6,6 @@
 #include <ArduinoOTA.h>
 #include <SetupWiFi.h>
 #include <WiFiClient.h>
-#include <SetupOTA.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
@@ -51,8 +50,8 @@ void setup(void)
   MqttUser = configString[EConfigEEpromIdx::MqttUserIdx];
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
-  setupOTA(DeviceName.c_str(),"Robot");
-
+  ArduinoOTA.setHostname(DeviceName.c_str());
+  client.enableOTA("Robot");  
   client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
 
@@ -67,9 +66,7 @@ void loop(void)
 {
   MqttClientloop();
   server.handleClient();
-  MDNS.update();
   statusLed.Loop();
-  loopOTA();
 
   for (uint8_t i = 0; i < sizeof(ampel) / sizeof(Ampel); i++)
   {
