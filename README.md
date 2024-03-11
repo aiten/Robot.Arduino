@@ -30,6 +30,6 @@ Install 8266 Arduino environment
 * Install ESP8266 Boards
 
 Device configuration
-* An AP is opend, if the device cannot connect to the specified WLAN
+* An AP is opened, if the device cannot connect to the specified WLAN
   The name of the AP is e.g. Robot4WD_xxxxxx (xxxxxx is a unique number)
 * To configure the device, please goto page 192.168.4.1  
