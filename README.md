@@ -9,7 +9,7 @@ What you need:
 * A Mqtt-broker.  
   You can use a minimal broker running on a esp8266 - see Sketch RobotMqttBroker
 * Devices, like a esp8266 LOLIN(WEMOS) D1
-* To send Mqtt command to the devices you can use  
+* To send Mqtt command to the devices, you can use  
   * "MQTT-Explorer-0.4.0-beta1.exe" or
   * see https://github.com/aiten/Robot
   
@@ -28,3 +28,8 @@ Install 8266 Arduino environment
 * see e.g. https://arduino-esp8266.readthedocs.io/en/latest/installing.html#
 * enter the following text in "Additional board manager URLs:" (Arduino Menu: File:Preferences...):  http://arduino.esp8266.com/stable/package_esp8266com_index.json
 * Install ESP8266 Boards
+
+Device configuration
+* An AP is opend, if the device cannot connect to the specified WLAN
+  The name of the AP is e.g. Robot4WD_xxxxxx (xxxxxx is a unique number)
+* To configure the device, please goto page 192.168.4.1  
