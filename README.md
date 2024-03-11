@@ -23,7 +23,8 @@ To run (and compile) all the sketches, please:
   * PicoMQTT (by Michal Lesniewski)
   * PubSubClient (by Nick O'Leary) - included by EspMQTTClient
 
-Install the 8266 Arduino environment
+Install 8266 Arduino environment
 
+* see e.g. https://arduino-esp8266.readthedocs.io/en/latest/insta
 * enter the following text in "Additional board manager URLs:" (Arduino Menu: File:Preferences...):  http://arduino.esp8266.com/stable/package_esp8266com_index.json
 * Install ESP8266 Boards
