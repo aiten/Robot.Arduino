@@ -25,6 +25,6 @@ To run (and compile) all the sketches, please:
 
 Install 8266 Arduino environment
 
-* see e.g. https://arduino-esp8266.readthedocs.io/en/latest/insta
+* see e.g. https://arduino-esp8266.readthedocs.io/en/latest/installing.html#
 * enter the following text in "Additional board manager URLs:" (Arduino Menu: File:Preferences...):  http://arduino.esp8266.com/stable/package_esp8266com_index.json
 * Install ESP8266 Boards
