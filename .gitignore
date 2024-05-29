@@ -406,3 +406,4 @@ FodyWeavers.xsd
 /libraries/Adafruit_Unified_Sensor
 /libraries/QMC5883LCompass
 /RobotMqtt2WD/*.bak
+/libraries/HX711
