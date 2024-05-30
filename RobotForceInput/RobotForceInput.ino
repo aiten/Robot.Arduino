@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
+//#include <ESP8266mDNS.h>
 #include <EepromConfig.h>
 #include <ArduinoOTA.h>
 #include <SetupWiFi.h>
@@ -34,6 +34,12 @@ StatusLed statusLed(STATUS_LED_PIN,500);
 EspMQTTClient espMQTTClient;
 
 MqttClient mqttClient(espMQTTClient);
+
+void onConnectionEstablished()
+{
+  mqttClient.onConnectionEstablished();
+}
+
 ForceSensor forceSensor(mqttClient,statusLed);
 
 void setup(void)

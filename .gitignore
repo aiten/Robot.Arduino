@@ -407,3 +407,4 @@ FodyWeavers.xsd
 /libraries/QMC5883LCompass
 /RobotMqtt2WD/*.bak
 /libraries/HX711
+/RobotMqtt4WD/*.bak

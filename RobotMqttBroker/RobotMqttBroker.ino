@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
+// #include <ESP8266mDNS.h>
 
 #include <EepromConfig.h>
 #include <PicoMQTT.h>
@@ -71,7 +71,7 @@ bool ledOnOff = false;
 void loop()
 {
   server.handleClient();
-  MDNS.update();
+  // MDNS.update();
   mqtt.loop();
 
   if (millis() > until)

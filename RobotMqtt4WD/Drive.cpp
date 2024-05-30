@@ -1,7 +1,6 @@
 #include <ArduinoJson.h>
 
-#include "Config.h"
-
+#include "Drive.h"
 
 void Drive::Setup()
 {
@@ -60,10 +59,10 @@ bool Drive::Go(uint16_t dir, uint32_t duration, uint8_t speed)
 
 void Drive::DriveTo(uint16_t dir, uint32_t duration, uint8_t speed)
 {
-  statusLed.ToggleNow(100);
+  _statusLed.ToggleNow(100);
 
-  Serial.printf("DRIVE: driveto: dir=%u, duration=%u, speed=%u\n", (uint)dir, (uint)duration, (uint)speed);
-  
+  Serial.printf("DRIVE: time=%lu, driveto: dir=%u, duration=%u, speed=%u\n", millis(), (uint)dir, (uint)duration, (uint)speed);
+
   if (Start(dir, speed))
   {
     digitalWrite(ONOFF_PIN, HIGH);
@@ -79,7 +78,7 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
     Stop();
     return false;
   }
-  
+
   int16_t speed_r;
   int16_t speed_l;
 
@@ -107,14 +106,14 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
 #if defined SINGLE_LN298
   SetPins(speed_l, D5, D6); // left
   SetPins(speed_r, D7, D8); // right
-#elif  defined TWO_LN298
+#elif defined TWO_LN298
   SetPins(speed_l, D1, D2); // front left
   SetPins(speed_l, D3, D4); // rear right
   SetPins(speed_r, D6, D5); // front right
   SetPins(speed_r, D8, D7); // rear right
 #endif
 
-  Serial.printf("DRIVE: right=%i, left=%i\n", (int)speed_r, (int)speed_l);
+  Serial.printf("DRIVE: time=%lu, right=%i, left=%i\n", millis(), (int)speed_r, (int)speed_l);
 
   JsonDocument doc;
 
@@ -125,7 +124,7 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
 
   String output;
   serializeJson(doc, output);
-  client.publish(MQTT_STAT + "/drive", output.c_str());
+  _client.publish(MQTT_STAT + "/drive", output.c_str());
 
   return true;
 }
@@ -138,15 +137,15 @@ void Drive::SetPins(int16_t speed, uint8_t pinFW, uint8_t pinBW)
 
 void Drive::Stop()
 {
-  Serial.println("DRIVE: stop");
+  Serial.printf("DRIVE: time=%lu, stop\n", millis());
 #if defined SINGLE_LN298
   SetPins(0, D5, D6); // left
   SetPins(0, D7, D8); // right
-#elif  defined TWO_LN298
-  SetPins(0, D1, D2); // front left
-  SetPins(0, D3, D4); // rear right
-  SetPins(0, D6, D5); // front right
-  SetPins(0, D8, D7); // rear right
+#elif defined TWO_LN298
+  SetPins(0, D1, D2);       // front left
+  SetPins(0, D3, D4);       // rear right
+  SetPins(0, D6, D5);       // front right
+  SetPins(0, D8, D7);       // rear right
 #endif
   digitalWrite(ONOFF_PIN, LOW);
 
@@ -155,5 +154,5 @@ void Drive::Stop()
 
   String output;
   serializeJson(doc, output);
-  client.publish(MQTT_STAT + "/drive", output.c_str());
+  _client.publish(MQTT_STAT + "/drive", output.c_str());
 }

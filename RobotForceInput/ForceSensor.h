@@ -31,7 +31,7 @@ private:
 
   HX711 _scales[2];
 
-  const float _calib[2] = {421.0, 421.0};
+  const float _calib[2] = {1000.0, 900.0};
 
   long _lastForceTimeR = 0;
   long _lastForceTimeL = 0;
@@ -114,14 +114,21 @@ public:
     CheckReverse(forceR, _forceDirectionR, _lastForceTimeR,false);
     CheckReverse(forceL, _forceDirectionL, _lastForceTimeL, true);
 
-  /*
+/*  
         Serial.print(forceR);
         Serial.print("R, ");
         Serial.print(forceL);
         Serial.print("L, ");
+        Serial.print(valueR);
+        Serial.print("R, ");
+        Serial.print(valueL);
+        Serial.print("L, ");
+
         Serial.print(direction);
         Serial.print("Dir, ");
+        
         Serial.println();
+        return;
 */
     uint direction = 0;
     if (forceL >= forceR)

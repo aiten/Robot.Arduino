@@ -9,38 +9,34 @@
 
 enum EConfigEEpromIdx
 {
-  SSIDIdx=0,
+  SSIDIdx = 0,
   PwdIdx,
   DeviceNameIdx,
   MqttBrokerIdx,
   MqttUserIdx,
   MqttPwdIdx,
 
-  SizeIdx          // to calculate max   
+  SizeIdx // to calculate max
 };
+
+//////////////////////////////////////////
+
+// define for e.g. LOLIN(WEMOS) D1
+
+#define STATUS_LED_PIN LED_BUILTIN
 
 //////////////////////////////////////////
 
 #include <EepromConfig.h>
 #include <EspMQTTClient.h>
 #include <StatusLed.h>
-#include "SetupPage.h"
-#include "Drive.h"
 
 //////////////////////////////////////////
-
-extern EepromConfig eepromConfig;
-extern ESP8266WebServer server;
-extern SetupPage setupWiFi;
-extern EspMQTTClient client;
-extern Drive drive;
-extern StatusLed statusLed;
 
 extern String DeviceName;
 extern String MqttBroker;
 extern String MqttUser;
 extern String MqttPwd;
-extern void MqttClientloop(void);
 
 //////////////////////////////////////////
 
@@ -49,4 +45,3 @@ extern void MqttClientloop(void);
 #define MQTT_STAT "robot/stat/" + DeviceName
 
 //////////////////////////////////////////
-
