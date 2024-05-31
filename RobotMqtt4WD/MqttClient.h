@@ -35,7 +35,7 @@ public:
     _client.publish(MQTT_DISCOVERY + "/config", output.c_str());
   }
 
-  bool GoOrDrive(const char *msg, const String &payload, uint16_t &direction, uint32_t &duration, uint8_t &speed)
+  bool GoOrDrive(const char *msg, const String &payload, uint16_t &direction, uint32_t &duration, uint8_t &speed, uint& id, float& time)
   {
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, payload);
@@ -50,9 +50,11 @@ public:
     direction = doc["direction"] | 0;
     duration = doc["duration"] | defaultDuration;
     speed = doc["speed"] | defaultSpeed;
+    id = doc["id"] | 0;
+    time = doc["time"] | 0.0;
 
-    char buffer[128];
-    snprintf(buffer, sizeof(buffer), "ROBOT: %s: direction=%u, speed=%u, duration=%u", msg, (uint)direction, speed, duration);
+    // char buffer[128];
+    // snprintf(buffer, sizeof(buffer), "ROBOT: %s: direction=%u, speed=%u, duration=%u", msg, (uint)direction, speed, duration);
 
     return true;
   }
@@ -72,10 +74,12 @@ public:
                         uint16_t direction;
                         uint32_t duration;
                         uint8_t speed;
+                        uint id;
+                        float time;
 
-                        if (this->GoOrDrive("drive", payload, direction, duration, speed))
+                        if (this->GoOrDrive("drive", payload, direction, duration, speed, id, time))
                         {
-                          this->_drive.Queue(direction, duration, speed);
+                          this->_drive.Queue(direction, duration, speed, id, time);
                         }
                       });
 
@@ -85,14 +89,16 @@ public:
                         uint16_t direction;
                         uint32_t duration;
                         uint8_t speed;
+                        uint id;
+                        float time;
 
-                        if (this->GoOrDrive("drive", payload, direction, duration, speed))
+                        if (this->GoOrDrive("drive", payload, direction, duration, speed, id, time))
                         {
-                          this->_drive.Go(direction, duration, speed);
+                          this->_drive.Go(direction, duration, speed, id, time);
                         }
                       });
 
-    _client.subscribe(MQTT_CMND + "/stop", [&](const String &payload) { this->_drive.Go(0, 0, 0); });
+    _client.subscribe(MQTT_CMND + "/stop", [&](const String &payload) { this->_drive.Go(0, 0, 0, 0, 0.0); });
 
     PublishDiscovery();
   }

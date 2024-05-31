@@ -34,19 +34,21 @@ private:
     uint16_t dir;
     uint32_t duration;
     uint8_t speed;
+    uint16_t id;
+    float time;
   };
 
   CRingBufferQueue<Command, 128> _driveBuffer;
 
-  void DriveTo(uint16_t dir, uint32_t duration, uint8_t speed);
+  void DriveTo(uint16_t dir, uint32_t duration, uint8_t speed, uint id, float time);
 
 public:
   void Setup();
 
   void Poll();
 
-  bool Queue(uint16_t dir, uint32_t duration, uint8_t speed);
-  bool Go(uint16_t dir, uint32_t duration, uint8_t speed); // instante, without queue (empty queue)
+  bool Queue(uint16_t dir, uint32_t duration, uint8_t speed, uint id, float time);
+  bool Go(uint16_t dir, uint32_t duration, uint8_t speed, uint id, float time); // instante, without queue (empty queue)
 
   bool IsIdle()
   {

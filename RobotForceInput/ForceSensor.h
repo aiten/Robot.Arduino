@@ -115,6 +115,9 @@ public:
 
     until = millis() + SEND_INTERVAL;
 
+    //LimitPublishGo(180, 128, SEND_INTERVAL + SEND_INTERVAL_ADD);
+    //return;
+
     float valueL = _scales[0].get_units();
     float valueR = _scales[1].get_units();
 
