@@ -115,9 +115,6 @@ public:
 
     until = millis() + SEND_INTERVAL;
 
-    //LimitPublishGo(180, 128, SEND_INTERVAL + SEND_INTERVAL_ADD);
-    //return;
-
     float valueL = _scales[0].get_units();
     float valueR = _scales[1].get_units();
 
@@ -185,6 +182,9 @@ public:
           direction = 225.0f - value;
       }
     }
+
+    // mirror => break mode
+    direction = 360-direction;
 
     uint speed = map(max((uint)abs(forceL), (uint)abs(forceR)), 0, 1000, 0, 255);
 

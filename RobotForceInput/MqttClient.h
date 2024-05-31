@@ -7,10 +7,10 @@
 class MqttClient
 {
 private:
-  EspMQTTClient &_client;
+  PicoMQTT::Client &_client;
 
 public:
-  MqttClient(EspMQTTClient &client) : _client(client)
+  MqttClient(PicoMQTT::Client &client) : _client(client)
   {
   }
 

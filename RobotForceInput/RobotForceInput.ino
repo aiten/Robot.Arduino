@@ -30,14 +30,9 @@ SetupPage setupWiFi("RobotForceInput", eepromConfig, server, STATUS_LED_PIN);
 
 StatusLed statusLed(STATUS_LED_PIN, 500);
 
-EspMQTTClient espMQTTClient;
+PicoMQTT::Client espMQTTClient;
 
 MqttClient mqttClient(espMQTTClient);
-
-void onConnectionEstablished()
-{
-  mqttClient.onConnectionEstablished();
-}
 
 ForceSensor forceSensor(mqttClient, statusLed);
 
@@ -58,10 +53,18 @@ void setup(void)
   SendTo = configString[EConfigEEpromIdx::SendToIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
-  espMQTTClient.setMaxPacketSize(512);
-  espMQTTClient.enableOTA("Robot");
-  espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  espMQTTClient.setMqttClientName(DeviceName.c_str());
+  ArduinoOTA.setPassword("Robot");
+  ArduinoOTA.begin();
+
+  espMQTTClient.host = MqttBroker.c_str();
+  espMQTTClient.username = MqttUser.c_str();
+  espMQTTClient.password = MqttPwd.c_str();
+  espMQTTClient.client_id = DeviceName.c_str();
+  mqttClient.onConnectionEstablished();
+
+  espMQTTClient.begin();
+  //espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  //espMQTTClient.setMqttClientName(DeviceName.c_str());
   //espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
   forceSensor.setupForceSensor();
 }
@@ -72,4 +75,5 @@ void loop(void)
   server.handleClient();
   forceSensor.loopForceSensor();
   statusLed.Loop();
+  ArduinoOTA.handle();
 }

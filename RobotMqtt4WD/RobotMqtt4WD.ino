@@ -29,7 +29,7 @@ SetupPage setupWiFi("Robot4WD", eepromConfig, server, STATUS_LED_PIN);
 
 StatusLed statusLed(STATUS_LED_PIN, 500);
 
-EspMQTTClient espMQTTClient;
+PicoMQTT::Client espMQTTClient;
 Drive drive(espMQTTClient, statusLed);
 
 MqttClient mqttClient(espMQTTClient, drive);
@@ -57,10 +57,16 @@ void setup(void)
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
-  espMQTTClient.setMaxPacketSize(512);
-  espMQTTClient.enableOTA("Robot");
-  espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  espMQTTClient.setMqttClientName(DeviceName.c_str());
+  espMQTTClient.host = MqttBroker.c_str();
+  espMQTTClient.username = MqttUser.c_str();
+  espMQTTClient.password = MqttPwd.c_str();
+  espMQTTClient.client_id = DeviceName.c_str();
+  onConnectionEstablished();
+  espMQTTClient.begin();
+//  espMQTTClient.setMaxPacketSize(512);
+//  espMQTTClient.enableOTA("Robot");
+//  espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+//  espMQTTClient.setMqttClientName(DeviceName.c_str());
   //  espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
 }
 

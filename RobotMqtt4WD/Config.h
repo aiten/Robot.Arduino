@@ -28,7 +28,7 @@ enum EConfigEEpromIdx
 //////////////////////////////////////////
 
 #include <EepromConfig.h>
-#include <EspMQTTClient.h>
+#include <PicoMQTT.h>
 #include <StatusLed.h>
 
 //////////////////////////////////////////

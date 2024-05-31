@@ -8,11 +8,11 @@
 class MqttClient
 {
 private:
-  EspMQTTClient &_client;
+  PicoMQTT::Client &_client;
   Drive &_drive;
 
 public:
-  MqttClient(EspMQTTClient &client, Drive &drive) : _client(client), _drive(drive)
+  MqttClient(PicoMQTT::Client &client, Drive &drive) : _client(client), _drive(drive)
   {
   }
 

@@ -12,12 +12,12 @@ const int ONOFF_PIN = D0;
 class Drive
 {
 public:
-  Drive(EspMQTTClient &client, StatusLed &statusLed) : _client(client), _statusLed(statusLed)
+  Drive(PicoMQTT::Client &client, StatusLed &statusLed) : _client(client), _statusLed(statusLed)
   {
   }
 
 private:
-  EspMQTTClient &_client;
+  PicoMQTT::Client &_client;
   StatusLed &_statusLed;
 
   const uint32_t IdleTime = 0xffffffff;
