@@ -4,7 +4,7 @@
 
 enum EConfigEEpromIdx
 {
-  SSIDIdx=0,
+  SSIDIdx = 0,
   PwdIdx,
   DeviceNameIdx,
   MqttBrokerIdx,
@@ -12,7 +12,7 @@ enum EConfigEEpromIdx
   MqttPwdIdx,
   SendToIdx,
 
-  SizeIdx          // to calculate max   
+  SizeIdx // to calculate max
 };
 
 //////////////////////////////////////////
@@ -22,6 +22,11 @@ enum EConfigEEpromIdx
 #define STATUS_LED_PIN LED_BUILTIN
 #define PUSHBUTTON_PIN 0xff
 #define PUSHBUTTON_ISON true
+
+#define DIRL_ON_LED D3
+#define DIRL_OFF_LED D8
+#define DIRR_ON_LED D2
+#define DIRR_OFF_LED D1
 
 //////////////////////////////////////////
 
@@ -47,4 +52,3 @@ extern String SendTo;
 #define MQTT_SENDTO_STAT "robot/stat/" + SendTo
 
 //////////////////////////////////////////
-

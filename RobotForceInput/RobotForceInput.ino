@@ -1,20 +1,19 @@
+#include <ArduinoOTA.h>
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-//#include <ESP8266mDNS.h>
 #include <EepromConfig.h>
-#include <ArduinoOTA.h>
 #include <SetupWiFi.h>
-#include <WiFiClient.h>
 #include <StatusLed.h>
+#include <WiFiClient.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
-#include "SetupPage.h"
 #include "ForceSensor.h"
 #include "MqttClient.h"
+#include "SetupPage.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
 
@@ -29,7 +28,7 @@ EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 ESP8266WebServer server(80);
 SetupPage setupWiFi("RobotForceInput", eepromConfig, server, STATUS_LED_PIN);
 
-StatusLed statusLed(STATUS_LED_PIN,500);
+StatusLed statusLed(STATUS_LED_PIN, 500);
 
 EspMQTTClient espMQTTClient;
 
@@ -40,7 +39,7 @@ void onConnectionEstablished()
   mqttClient.onConnectionEstablished();
 }
 
-ForceSensor forceSensor(mqttClient,statusLed);
+ForceSensor forceSensor(mqttClient, statusLed);
 
 void setup(void)
 {
@@ -59,7 +58,8 @@ void setup(void)
   SendTo = configString[EConfigEEpromIdx::SendToIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
-  espMQTTClient.enableOTA("Robot");  
+  espMQTTClient.setMaxPacketSize(512);
+  espMQTTClient.enableOTA("Robot");
   espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   espMQTTClient.setMqttClientName(DeviceName.c_str());
   espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output

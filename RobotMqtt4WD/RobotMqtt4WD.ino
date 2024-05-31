@@ -57,6 +57,7 @@ void setup(void)
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
+  espMQTTClient.setMaxPacketSize(512);
   espMQTTClient.enableOTA("Robot");
   espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   espMQTTClient.setMqttClientName(DeviceName.c_str());

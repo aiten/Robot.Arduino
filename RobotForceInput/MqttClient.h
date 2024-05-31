@@ -10,7 +10,7 @@ private:
   EspMQTTClient &_client;
 
 public:
-  MqttClient(EspMQTTClient& client) : _client(client)
+  MqttClient(EspMQTTClient &client) : _client(client)
   {
   }
 
@@ -59,34 +59,36 @@ public:
     String output;
     serializeJson(doc, output);
 
+    Serial.printf("Publish: Time=%lu, Dir=%u, Speed=%u\n", millis(), direction, speed);
+
     _client.publish(MQTT_SENDTO_CMND + "/go", output.c_str());
   }
 
   void onConnectionEstablished()
   {
     _client.subscribe(MQTT_CMND + "/reset",
-                     [](const String &)
-                     {
-                       // setupWiFi.LeaveNetwork();
-                       Serial.println("Reset WiFi connection: please reboot");
-                     });
+                      [](const String &)
+                      {
+                        // setupWiFi.LeaveNetwork();
+                        Serial.println("Reset WiFi connection: please reboot");
+                      });
 
     _client.subscribe(MQTT_CMND + "/set",
-                     [](const String &payload)
-                     {
-                       /*
-                           uint8_t idx;
-                           bool toRed;
-                           bool toGreen;
-                           uint32_t delay;
+                      [](const String &payload)
+                      {
+                        /*
+                            uint8_t idx;
+                            bool toRed;
+                            bool toGreen;
+                            uint32_t delay;
 
-                           if (SetAmpel("set", payload, idx, toRed, toGreen,delay))
-                           {
-                             if (toRed) ampel[idx].ToRed(delay);
-                             else if (toGreen) ampel[idx].ToGreen(delay);
-                           }
-                       */
-                     });
+                            if (SetAmpel("set", payload, idx, toRed, toGreen,delay))
+                            {
+                              if (toRed) ampel[idx].ToRed(delay);
+                              else if (toGreen) ampel[idx].ToGreen(delay);
+                            }
+                        */
+                      });
 
     PublishDiscovery();
   }

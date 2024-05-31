@@ -16,8 +16,8 @@ private:
   MqttClient &_mqttClient;
   StatusLed &_statusLed;
 
-  const long SEND_INTERVAL = 150;
-  const long SEND_INTERVAL_ADD = 150; // add time to go
+  const long SEND_INTERVAL = 100;
+  const long SEND_INTERVAL_ADD = 250; // add time to go
   const int MIN_SPEED = 60;
 
   const uint8_t _dataPin[2] = {D5, D6};
@@ -25,8 +25,8 @@ private:
 
 #define REMEMBERFORCECOUNT 4
 
-  const float MINREVERSE = 10.0f;
-  const float MAXREVERSE = 10.0f;
+  const float MINREVERSE = 20.0f;
+  const float MAXREVERSE = 20.0f;
   const long REVERSETIME = SEND_INTERVAL * 3 + 10;
 
   HX711 _scales[2];
@@ -40,7 +40,7 @@ private:
   float _forceDirectionR = 1.0f;
 
 public:
-  inline void LimitPublishGo(uint direction, uint speed, uint duration)
+  inline bool LimitPublishGo(uint direction, uint speed, uint duration)
   {
     static bool _speed0Sent = false;
     if (speed < MIN_SPEED)
@@ -53,6 +53,8 @@ public:
       _mqttClient.PublishGo(direction, speed, duration);
       _speed0Sent = speed == 0;
     }
+
+    return speed > 0;
   }
 
   inline void setupForceSensor()
@@ -64,6 +66,12 @@ public:
       // reset the scale to zero = 0
       _scales[i].tare();
     }
+    /*
+        pinMode(DIRL_ON_LED, OUTPUT);
+        pinMode(DIRL_OFF_LED, OUTPUT);
+        pinMode(DIRR_ON_LED, OUTPUT);
+        pinMode(DIRR_OFF_LED, OUTPUT);
+    */
   }
 
   inline void CheckReverse(float force, float &forceDirection, long &lastForceTime, bool left)
@@ -73,8 +81,10 @@ public:
       if (lastForceTime != 0 && (millis() - lastForceTime) < REVERSETIME)
       {
         forceDirection *= -1.0f;
-        Serial.print(forceDirection);
-        Serial.println((left) ? "Left" : "Right");
+        /*
+                Serial.print(forceDirection);
+                Serial.println((left) ? "Left" : "Right");
+        */
       }
       lastForceTime = 0;
     }
@@ -111,25 +121,30 @@ public:
     float forceR = max(min(valueR, 1000.0f), 0.0f);
     float forceL = max(min(valueL, 1000.0f), 0.0f);
 
-    CheckReverse(forceR, _forceDirectionR, _lastForceTimeR,false);
+    CheckReverse(forceR, _forceDirectionR, _lastForceTimeR, false);
     CheckReverse(forceL, _forceDirectionL, _lastForceTimeL, true);
 
-/*  
-        Serial.print(forceR);
-        Serial.print("R, ");
-        Serial.print(forceL);
-        Serial.print("L, ");
-        Serial.print(valueR);
-        Serial.print("R, ");
-        Serial.print(valueL);
-        Serial.print("L, ");
+    analogWrite(DIRL_ON_LED, _forceDirectionL > 0.0 ? 255 : map(forceL, 0, 1000, 0, 255));
+    analogWrite(DIRL_OFF_LED, _forceDirectionL < 0.0 ? 255 : map(forceL, 0, 1000, 0, 255));
+    analogWrite(DIRR_ON_LED, _forceDirectionR > 0.0 ? 255 : map(forceR, 0, 1000, 0, 255));
+    analogWrite(DIRR_OFF_LED, _forceDirectionR < 0.0 ? 255 : map(forceR, 0, 1000, 0, 255));
 
-        Serial.print(direction);
-        Serial.print("Dir, ");
-        
-        Serial.println();
-        return;
-*/
+    /*
+            Serial.print(forceR);
+            Serial.print("R, ");
+            Serial.print(forceL);
+            Serial.print("L, ");
+            Serial.print(valueR);
+            Serial.print("R, ");
+            Serial.print(valueL);
+            Serial.print("L, ");
+
+            Serial.print(direction);
+            Serial.print("Dir, ");
+
+            Serial.println();
+            return;
+    */
     uint direction = 0;
     if (forceL >= forceR)
     {
@@ -169,14 +184,7 @@ public:
     }
 
     uint speed = map(max((uint)abs(forceL), (uint)abs(forceR)), 0, 1000, 0, 255);
-    /*
-        Serial.print(direction);
-        Serial.print(" Dir, ");
-        Serial.print(speed);
-        Serial.print(" Speed, ");
 
-        Serial.println();
-    */
     LimitPublishGo(direction, speed, SEND_INTERVAL + SEND_INTERVAL_ADD);
   }
 };

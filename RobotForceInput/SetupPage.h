@@ -35,13 +35,12 @@ protected:
            mqttUser +
            "\" length=32><br />"
            "<label>Mqtt-Pwd:</label><input type=\"password\" name='mqttPwd' value=\"" +
-           mqttPwd + "\" length=32><br />"
-           "<label>SendTo:</label><input name='sendTo' value=\"" +
-           sendTo +
+           mqttPwd +
            "\" length=32><br />"
-           ;
+           "<label>SendTo:</label><input name='sendTo' value=\"" +
+           sendTo + "\" length=32><br />";
   }
-  
+
   virtual bool StoreValues(String *configString) override
   {
     if (!super::StoreValues(configString))
