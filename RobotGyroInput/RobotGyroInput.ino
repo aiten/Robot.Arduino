@@ -1,12 +1,11 @@
+#include <ArduinoOTA.h>
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
 #include <EepromConfig.h>
-#include <ArduinoOTA.h>
 #include <SetupWiFi.h>
-#include <WiFiClient.h>
 #include <StatusLed.h>
+#include <WiFiClient.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
@@ -30,7 +29,11 @@ SetupPage setupWiFi("RobotGyroInput", eepromConfig, server, STATUS_LED_PIN);
 
 StatusLed statusLed(STATUS_LED_PIN,500);
 
-Adafruit_MPU6050 mpu;
+PicoMQTT::Client espMQTTClient;
+
+MqttClient mqttClient(espMQTTClient);
+
+MPU6050 mpu6050(mqttClient, statusLed);
 
 void setup(void)
 {
@@ -51,17 +54,27 @@ void setup(void)
   SendTo = configString[EConfigEEpromIdx::SendToIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
-  client.enableOTA("Robot");  
-  client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  client.setMqttClientName(DeviceName.c_str());
-  client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
-  setupMPU6050();
+  ArduinoOTA.setPassword("Robot");
+  ArduinoOTA.begin();
+
+  espMQTTClient.host = MqttBroker.c_str();
+  espMQTTClient.username = MqttUser.c_str();
+  espMQTTClient.password = MqttPwd.c_str();
+  espMQTTClient.client_id = DeviceName.c_str();
+  mqttClient.onConnectionEstablished();
+
+  espMQTTClient.begin();
+  //espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  //espMQTTClient.setMqttClientName(DeviceName.c_str());
+  //espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  mpu6050.setupMPU6050();
 }
 
 void loop(void)
 {
-  MqttClientloop();
+  mqttClient.MqttClientloop();
   server.handleClient();
-  loopMPU6050();
+  mpu6050.loopMPU6050();
   statusLed.Loop();
+  ArduinoOTA.handle();
 }

@@ -47,9 +47,8 @@ enum EConfigEEpromIdx
 //////////////////////////////////////////
 
 #include <EepromConfig.h>
-#include <EspMQTTClient.h>
+#include <PicoMQTT.h>
 #include <StatusLed.h>
-#include "SetupPage.h"
 
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
@@ -57,22 +56,11 @@ enum EConfigEEpromIdx
 
 //////////////////////////////////////////
 
-extern EepromConfig eepromConfig;
-extern ESP8266WebServer server;
-extern SetupPage setupWiFi;
-extern EspMQTTClient client;
-extern StatusLed statusLed;
-
 extern String DeviceName;
 extern String MqttBroker;
 extern String MqttUser;
 extern String MqttPwd;
 extern String SendTo;
-
-extern Adafruit_MPU6050 mpu;
-
-extern void MqttClientloop(void);
-extern void PublishGo(uint direction, uint speed, uint duration);
 
 //////////////////////////////////////////
 
@@ -84,4 +72,3 @@ extern void PublishGo(uint direction, uint speed, uint duration);
 #define MQTT_SENDTO_STAT "robot/stat/" + SendTo
 
 //////////////////////////////////////////
-
