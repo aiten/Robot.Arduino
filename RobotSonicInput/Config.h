@@ -23,32 +23,27 @@ enum EConfigEEpromIdx
 #define PUSHBUTTON_PIN 0xff
 #define PUSHBUTTON_ISON true
 
+#define SENSOR1_TRGPIN D1
+#define SENSOR1_ECHOPIN D2
+
+#define SENSOR2_TRGPIN D5
+#define SENSOR2_ECHOPIN D6
+
 //////////////////////////////////////////
 
 #include <EepromConfig.h>
-#include <EspMQTTClient.h>
+#include <PicoMQTT.h>
 #include <StatusLed.h>
 #include "SetupPage.h"
 #include "HCSr04.h"
 
 //////////////////////////////////////////
 
-extern EepromConfig eepromConfig;
-extern ESP8266WebServer server;
-extern SetupPage setupWiFi;
-extern EspMQTTClient client;
-extern StatusLed statusLed;
-
 extern String DeviceName;
 extern String MqttBroker;
 extern String MqttUser;
 extern String MqttPwd;
 extern String SendTo;
-extern HCSr04 sensor1;
-extern HCSr04 sensor2;
-
-extern void MqttClientloop(void);
-extern void PublishGo(uint direction, uint speed, uint duration);
 
 //////////////////////////////////////////
 
@@ -60,4 +55,3 @@ extern void PublishGo(uint direction, uint speed, uint duration);
 #define MQTT_SENDTO_STAT "robot/stat/" + SendTo
 
 //////////////////////////////////////////
-
