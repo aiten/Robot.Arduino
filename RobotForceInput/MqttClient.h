@@ -59,7 +59,8 @@ public:
     String output;
     serializeJson(doc, output);
 
-    Serial.printf("Publish: Time=%lu, Dir=%u, Speed=%u\n", millis(), direction, speed);
+    auto myTime = millis();
+    Serial.printf("Publish: Time=%u.%03u, Dir=%u, Speed=%u\n", (uint)(myTime/1000),(uint)(myTime%1000), direction, speed);
 
     _client.publish(MQTT_SENDTO_CMND + "/go", output.c_str());
   }
