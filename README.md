@@ -22,6 +22,7 @@ To run (and compile) all the sketches, please:
   * EspMQTTClient (by Patrick Lapointe)
   * PicoMQTT (by Michal Lesniewski)
   * PubSubClient (by Nick O'Leary) - included by EspMQTTClient
+  * HX711 (by Rob Tillaart) - use for InputForce
 
 Install 8266 Arduino environment
 
