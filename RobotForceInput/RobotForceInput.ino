@@ -63,9 +63,9 @@ void setup(void)
   mqttClient.onConnectionEstablished();
 
   espMQTTClient.begin();
-  //espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  //espMQTTClient.setMqttClientName(DeviceName.c_str());
-  //espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  // espMQTTClient.setMqttClientName(DeviceName.c_str());
+  // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
   forceSensor.setupForceSensor();
 }
 

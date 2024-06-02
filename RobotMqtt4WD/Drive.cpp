@@ -63,8 +63,8 @@ void Drive::DriveTo(uint16_t dir, uint32_t duration, uint8_t speed, uint id, flo
 {
   _statusLed.ToggleNow(100);
 
-  auto myTime=millis();
-  Serial.printf("DRIVE: time=%u.%03u, driveto: dir=%u, duration=%u, speed=%u, id=%u, time=%0.3f\n", (uint)(myTime/1000),(uint)(myTime%1000), (uint)dir, (uint)duration, (uint)speed, id, time);
+  auto myTime = millis();
+  Serial.printf("DRIVE: time=%u.%03u, driveto: dir=%u, duration=%u, speed=%u, id=%u, time=%0.3f\n", (uint)(myTime / 1000), (uint)(myTime % 1000), (uint)dir, (uint)duration, (uint)speed, id, time);
 
   if (Start(dir, speed))
   {
@@ -116,7 +116,7 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
   SetPins(speed_r, D8, D7); // rear right
 #endif
 
-//  Serial.printf("DRIVE: time=%lu, right=%i, left=%i\n", millis(), (int)speed_r, (int)speed_l);
+  //  Serial.printf("DRIVE: time=%lu, right=%i, left=%i\n", millis(), (int)speed_r, (int)speed_l);
 
   JsonDocument doc;
 
@@ -140,8 +140,8 @@ void Drive::SetPins(int16_t speed, uint8_t pinFW, uint8_t pinBW)
 
 void Drive::Stop()
 {
-  auto myTime=millis();
-  Serial.printf("DRIVE: time=%u.%03u, stop\n", (uint)(myTime/1000),(uint)(myTime%1000));
+  auto myTime = millis();
+  Serial.printf("DRIVE: time=%u.%03u, stop\n", (uint)(myTime / 1000), (uint)(myTime % 1000));
 #if defined SINGLE_LN298
   SetPins(0, D5, D6); // left
   SetPins(0, D7, D8); // right

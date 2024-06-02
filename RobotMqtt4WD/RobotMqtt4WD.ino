@@ -76,4 +76,3 @@ void loop(void)
   statusLed.Loop();
   ArduinoOTA.handle();
 }
-

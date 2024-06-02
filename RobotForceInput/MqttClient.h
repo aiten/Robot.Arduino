@@ -60,36 +60,32 @@ public:
     serializeJson(doc, output);
 
     auto myTime = millis();
-    Serial.printf("Publish: Time=%u.%03u, Dir=%u, Speed=%u\n", (uint)(myTime/1000),(uint)(myTime%1000), direction, speed);
+    Serial.printf("Publish: Time=%u.%03u, Dir=%u, Speed=%u\n", (uint)(myTime / 1000), (uint)(myTime % 1000), direction, speed);
 
     _client.publish(MQTT_SENDTO_CMND + "/go", output.c_str());
   }
 
   void onConnectionEstablished()
   {
-    _client.subscribe(MQTT_CMND + "/reset",
-                      [](const String &)
-                      {
-                        // setupWiFi.LeaveNetwork();
-                        Serial.println("Reset WiFi connection: please reboot");
-                      });
+    _client.subscribe(MQTT_CMND + "/reset", [](const String &) {
+      // setupWiFi.LeaveNetwork();
+      Serial.println("Reset WiFi connection: please reboot");
+    });
 
-    _client.subscribe(MQTT_CMND + "/set",
-                      [](const String &payload)
-                      {
-                        /*
-                            uint8_t idx;
-                            bool toRed;
-                            bool toGreen;
-                            uint32_t delay;
+    _client.subscribe(MQTT_CMND + "/set", [](const String &payload) {
+      /*
+          uint8_t idx;
+          bool toRed;
+          bool toGreen;
+          uint32_t delay;
 
-                            if (SetAmpel("set", payload, idx, toRed, toGreen,delay))
-                            {
-                              if (toRed) ampel[idx].ToRed(delay);
-                              else if (toGreen) ampel[idx].ToGreen(delay);
-                            }
-                        */
-                      });
+          if (SetAmpel("set", payload, idx, toRed, toGreen,delay))
+          {
+            if (toRed) ampel[idx].ToRed(delay);
+            else if (toGreen) ampel[idx].ToGreen(delay);
+          }
+      */
+    });
 
     PublishDiscovery();
   }

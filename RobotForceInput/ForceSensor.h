@@ -184,7 +184,7 @@ public:
     }
 
     // mirror => break mode
-    direction = 360-direction;
+    direction = 360 - direction;
 
     uint speed = map(max((uint)abs(forceL), (uint)abs(forceR)), 0, 1000, 0, 255);
 

@@ -17,32 +17,33 @@ public:
 
   uint32_t ReadDuration()
   {
-      // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
-      // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-      digitalWrite(_trgPin, LOW);
-      delayMicroseconds(2);
-      digitalWrite(_trgPin, HIGH);
-      delayMicroseconds(10);
-      digitalWrite(_trgPin, LOW);
+    // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
+    // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+    digitalWrite(_trgPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(_trgPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(_trgPin, LOW);
 
-      // The same pin is used to read the signal from the PING))): a HIGH
-      // pulse whose duration is the time (in microseconds) from the sending
-      // of the ping to the reception of its echo off of an object.
-      // timeout 340m/s (at 20°)=>  10000000 / 34 / 2 => 5m max
-      noInterrupts();
-      uint32_t duration = pulseIn(_echoPin, HIGH, 1000000 / 34 / 2);
-      interrupts();
+    // The same pin is used to read the signal from the PING))): a HIGH
+    // pulse whose duration is the time (in microseconds) from the sending
+    // of the ping to the reception of its echo off of an object.
+    // timeout 340m/s (at 20°)=>  10000000 / 34 / 2 => 5m max
+    noInterrupts();
+    uint32_t duration = pulseIn(_echoPin, HIGH, 1000000 / 34 / 2);
+    interrupts();
 
-//      Serial.println(duration);Serial.print(" ");
+    //      Serial.println(duration);Serial.print(" ");
 
-      return duration;
+    return duration;
   }
 
   uint32_t ReadDuration(uint8_t samples)
   {
     uint32_t durationsum = ReadDuration();
 
-    for (uint8_t i = 1; i < samples; i++) {
+    for (uint8_t i = 1; i < samples; i++)
+    {
       DelayBetweenMeasurement();
       durationsum += ReadDuration();
     }
@@ -51,12 +52,12 @@ public:
 
   static void DelayBetweenMeasurement()
   {
-      delay(30);
+    delay(30);
   }
 
   uint ReadMM()
   {
     // The speed of sound is 340 m/s or 29 microseconds per centimeter.
-    return (uint) (ReadDuration(_samples) / _samples / 3 / 2);
+    return (uint)(ReadDuration(_samples) / _samples / 3 / 2);
   }
 };

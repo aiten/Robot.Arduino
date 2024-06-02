@@ -2,9 +2,8 @@
 
 //////////////////////////////////////////
 
-enum EConfigEEpromIdx
-{
-  SSIDIdx=0,
+enum EConfigEEpromIdx {
+  SSIDIdx = 0,
   PwdIdx,
   DeviceNameIdx,
   MqttBrokerIdx,
@@ -12,22 +11,21 @@ enum EConfigEEpromIdx
   MqttPwdIdx,
   SendToIdx,
 
-  SizeIdx          // to calculate max   
+  SizeIdx // to calculate max
 };
 
 //////////////////////////////////////////
 
-
 #if defined(ARDUINO_ESP8266_ESP01)
 
-//use Board "Generic ESP8285" to get ARDUINO_ESP8266_ESP01 defined
+// use Board "Generic ESP8285" to get ARDUINO_ESP8266_ESP01 defined
 
 #define STATUS_LED_PIN 1 // 0xff
 #define PUSHBUTTON_PIN 3 // 0xff
 #define PUSHBUTTON_ISON true
 #define DONOTUSESERIAL
 
-#define GYROCONVERT(x,y)  -y,x
+#define GYROCONVERT(x, y) -y, x
 
 #define SDA_PIN 0
 #define SCL_PIN 2
@@ -40,7 +38,7 @@ enum EConfigEEpromIdx
 #define PUSHBUTTON_PIN D3
 #define PUSHBUTTON_ISON false
 
-#define GYROCONVERT(x,y)  x,y
+#define GYROCONVERT(x, y) x, y
 
 #endif
 

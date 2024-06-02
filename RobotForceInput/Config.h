@@ -2,8 +2,7 @@
 
 //////////////////////////////////////////
 
-enum EConfigEEpromIdx
-{
+enum EConfigEEpromIdx {
   SSIDIdx = 0,
   PwdIdx,
   DeviceNameIdx,

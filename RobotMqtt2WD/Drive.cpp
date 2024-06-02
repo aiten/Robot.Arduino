@@ -1,7 +1,7 @@
 #include <ArduinoJson.h>
 
-#include "Drive.h"
 #include "Config.h"
+#include "Drive.h"
 
 Motor motor1(D5, D6, D1);
 Motor motor2(D7, D8, D2);
@@ -66,10 +66,10 @@ bool Drive::Go(uint16_t dir, uint32_t duration, uint8_t speed)
 
 void Drive::DriveTo(uint16_t dir, uint32_t duration, uint8_t speed)
 {
-  statusLed.ToggleNow(100);
+  _statusLed.ToggleNow(100);
 
   Serial.printf("DRIVE: driveto: dir=%u, duration=%u, speed=%u\n", (uint)dir, (uint)duration, (uint)speed);
-  
+
   if (Start(dir, speed))
   {
     digitalWrite(ONOFF_PIN, HIGH);
@@ -85,7 +85,7 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
     Stop();
     return false;
   }
-  
+
   int16_t speed_r;
   int16_t speed_l;
 
@@ -110,9 +110,9 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
     speed_r = speed;
   }
 
-  motor1.Start(speed_r*4);
-  motor2.Start(speed_l*4);
-  
+  motor1.Start(speed_r * 4);
+  motor2.Start(speed_l * 4);
+
   Serial.printf("DRIVE: right=%i, left=%i\n", (int)speed_r, (int)speed_l);
 
   JsonDocument doc;
@@ -124,7 +124,7 @@ bool Drive::Start(uint16_t dir, uint8_t speed)
 
   String output;
   serializeJson(doc, output);
-  client.publish(MQTT_STAT + "/drive", output.c_str());
+  _client.publish(MQTT_STAT + "/drive", output.c_str());
 
   return true;
 }
@@ -141,5 +141,5 @@ void Drive::Stop()
 
   String output;
   serializeJson(doc, output);
-  client.publish(MQTT_STAT + "/drive", output.c_str());
+  _client.publish(MQTT_STAT + "/drive", output.c_str());
 }

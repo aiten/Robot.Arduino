@@ -11,8 +11,8 @@
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
-#include "SetupPage.h"
 #include "MPU6050.h"
+#include "SetupPage.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
 
@@ -27,7 +27,7 @@ EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 ESP8266WebServer server(80);
 SetupPage setupWiFi("RobotGyroInput", eepromConfig, server, STATUS_LED_PIN);
 
-StatusLed statusLed(STATUS_LED_PIN,500);
+StatusLed statusLed(STATUS_LED_PIN, 500);
 
 PicoMQTT::Client espMQTTClient;
 
@@ -37,8 +37,8 @@ MPU6050 mpu6050(mqttClient, statusLed);
 
 void setup(void)
 {
-#if !defined(DONOTUSESERIAL)    // use RX,TX on esp01
-  Serial.begin(115200); // Initialising if(DEBUG)Serial Monitor
+#if !defined(DONOTUSESERIAL) // use RX,TX on esp01
+  Serial.begin(115200);      // Initialising if(DEBUG)Serial Monitor
 #endif
 
   EEPROM.begin(512);
@@ -64,9 +64,9 @@ void setup(void)
   mqttClient.onConnectionEstablished();
 
   espMQTTClient.begin();
-  //espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  //espMQTTClient.setMqttClientName(DeviceName.c_str());
-  //espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  // espMQTTClient.setMqttClientName(DeviceName.c_str());
+  // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
   mpu6050.setupMPU6050();
 }
 

@@ -66,33 +66,33 @@ public:
       Serial.println("Reset WiFi connection: please reboot");
     });
 
-    _client.subscribe(MQTT_CMND + "/drive", [&](const String &payload) {
+    _client.subscribe(MQTT_CMND + "/drive", [this](const String &payload) {
       uint16_t direction;
       uint32_t duration;
       uint8_t speed;
       uint id;
       float time;
 
-      if (this->GoOrDrive("drive", payload, direction, duration, speed, id, time))
+      if (GoOrDrive("drive", payload, direction, duration, speed, id, time))
       {
-        this->_drive.Queue(direction, duration, speed, id, time);
+        _drive.Queue(direction, duration, speed);
       }
     });
 
-    _client.subscribe(MQTT_CMND + "/go", [&](const String &payload) {
+    _client.subscribe(MQTT_CMND + "/go", [this](const String &payload) {
       uint16_t direction;
       uint32_t duration;
       uint8_t speed;
       uint id;
       float time;
 
-      if (this->GoOrDrive("drive", payload, direction, duration, speed, id, time))
+      if (GoOrDrive("drive", payload, direction, duration, speed, id, time))
       {
-        this->_drive.Go(direction, duration, speed, id, time);
+        _drive.Go(direction, duration, speed);
       }
     });
 
-    _client.subscribe(MQTT_CMND + "/stop", [&](const String &payload) { this->_drive.Go(0, 0, 0, 0, 0.0); });
+    _client.subscribe(MQTT_CMND + "/stop", [this](const String &payload) { _drive.Go(0, 0, 0); });
 
     PublishDiscovery();
   }

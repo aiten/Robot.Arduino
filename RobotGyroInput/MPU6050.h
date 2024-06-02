@@ -43,7 +43,6 @@ private:
   }
 
 public:
-
   void setupMPU6050()
   {
 #if defined(SDA_PIN)

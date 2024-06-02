@@ -2,9 +2,8 @@
 
 //////////////////////////////////////////
 
-enum EConfigEEpromIdx
-{
-  SSIDIdx=0,
+enum EConfigEEpromIdx {
+  SSIDIdx = 0,
   PwdIdx,
   DeviceNameIdx,
   MqttBrokerIdx,
@@ -12,7 +11,7 @@ enum EConfigEEpromIdx
   MqttPwdIdx,
   SendToIdx,
 
-  SizeIdx          // to calculate max   
+  SizeIdx // to calculate max
 };
 
 //////////////////////////////////////////
@@ -31,11 +30,11 @@ enum EConfigEEpromIdx
 
 //////////////////////////////////////////
 
+#include "HCSr04.h"
+#include "SetupPage.h"
 #include <EepromConfig.h>
 #include <PicoMQTT.h>
 #include <StatusLed.h>
-#include "SetupPage.h"
-#include "HCSr04.h"
 
 //////////////////////////////////////////
 

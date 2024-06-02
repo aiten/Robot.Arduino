@@ -1,19 +1,18 @@
+#include <ArduinoOTA.h>
+#include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-#include <EEPROM.h>
-#include <ArduinoOTA.h>
 #include <EepromConfig.h>
-#include <Motor.h>
 #include <SetupWiFi.h>
-#include <WiFiClient.h>
 #include <StatusLed.h>
+#include <WiFiClient.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
 #include "Drive.h"
+#include "MqttClient.h"
 #include "SetupPage.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
@@ -26,11 +25,14 @@ String MqttPwd;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("Robot4WD", eepromConfig, server, LED_BUILTIN);
+SetupPage setupWiFi("Robot2WD", eepromConfig, server, STATUS_LED_PIN);
 
-StatusLed statusLed(LED_BUILTIN,500);
+StatusLed statusLed(STATUS_LED_PIN, 500);
 
-Drive drive;
+PicoMQTT::Client espMQTTClient;
+Drive drive(espMQTTClient, statusLed);
+
+MqttClient mqttClient(espMQTTClient, drive);
 
 void setup(void)
 {
@@ -50,16 +52,27 @@ void setup(void)
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
-  client.enableOTA("Robot");  
-  client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  client.setMqttClientName(DeviceName.c_str());
-  client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  ArduinoOTA.setPassword("Robot");
+  ArduinoOTA.begin();
+
+  espMQTTClient.host = MqttBroker.c_str();
+  espMQTTClient.username = MqttUser.c_str();
+  espMQTTClient.password = MqttPwd.c_str();
+  espMQTTClient.client_id = DeviceName.c_str();
+  mqttClient.onConnectionEstablished();
+  espMQTTClient.begin();
+  //  espMQTTClient.setMaxPacketSize(512);
+  //  espMQTTClient.enableOTA("Robot");
+  //  espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  //  espMQTTClient.setMqttClientName(DeviceName.c_str());
+  //  espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
 }
 
 void loop(void)
 {
-  MqttClientloop();
+  mqttClient.MqttClientloop();
   server.handleClient();
   drive.Poll();
   statusLed.Loop();
+  ArduinoOTA.handle();
 }

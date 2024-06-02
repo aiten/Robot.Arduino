@@ -28,7 +28,7 @@ EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 ESP8266WebServer server(80);
 SetupPage setupWiFi("RobotSonicInput", eepromConfig, server, STATUS_LED_PIN);
 
-StatusLed statusLed(STATUS_LED_PIN,500);
+StatusLed statusLed(STATUS_LED_PIN, 500);
 
 HCSr04 sensor1(D1, D2);
 HCSr04 sensor2(D5, D6);
@@ -66,9 +66,9 @@ void setup(void)
   mqttClient.onConnectionEstablished();
 
   espMQTTClient.begin();
-  //espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  //espMQTTClient.setMqttClientName(DeviceName.c_str());
-  //espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  // espMQTTClient.setMqttClientName(DeviceName.c_str());
+  // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
   distanceSensor.setupDistanceSensor();
 }
 
