@@ -2,42 +2,32 @@
 
 //////////////////////////////////////////
 
-enum EConfigEEpromIdx
-{
-  SSIDIdx=0,
+enum EConfigEEpromIdx {
+  SSIDIdx = 0,
   PwdIdx,
   DeviceNameIdx,
   MqttBrokerIdx,
   MqttUserIdx,
   MqttPwdIdx,
 
-  SizeIdx          // to calculate max   
+  SizeIdx // to calculate max
 };
 
 //////////////////////////////////////////
 
+#define STATUS_LED_PIN LED_BUILTIN
+#define PUSHBUTTON_PIN 0xff
+#define PUSHBUTTON_ISON true
 #include <EepromConfig.h>
-#include <EspMQTTClient.h>
+#include <PicoMQTT.h>
 #include <StatusLed.h>
-#include "SetupPage.h"
-#include "PushButton.h"
-#include "Ampel.h"
 
 //////////////////////////////////////////
-
-extern EepromConfig eepromConfig;
-extern ESP8266WebServer server;
-extern SetupPage setupWiFi;
-extern EspMQTTClient client;
-extern StatusLed statusLed;
 
 extern String DeviceName;
 extern String MqttBroker;
 extern String MqttUser;
 extern String MqttPwd;
-extern void MqttClientloop(void);
-
-extern Ampel ampel[];
 
 //////////////////////////////////////////
 
@@ -46,4 +36,3 @@ extern Ampel ampel[];
 #define MQTT_STAT "robot/stat/" + DeviceName
 
 //////////////////////////////////////////
-

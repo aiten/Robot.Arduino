@@ -12,6 +12,7 @@
 #include "config.h"
 
 #include "Ampel.h"
+#include "MqttClient.h"
 
 Ampel::Phase Ampel::_phases[] = {
     {true, false, false, 0},    // Red = 0,
@@ -60,5 +61,5 @@ void Ampel::SetPhase()
   String output;
   serializeJson(doc, output);
 
-  client.publish(MQTT_STAT + "/phase" + String(_index), output.c_str());
+  _mqttClient.Client().publish(MQTT_STAT + "/phase" + String(_index), output.c_str());
 }

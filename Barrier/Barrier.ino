@@ -1,16 +1,18 @@
+#include <ArduinoOTA.h>
 #include <EEPROM.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
 #include <EepromConfig.h>
-#include <ArduinoOTA.h>
+#include <PushButton.h>
 #include <SetupWiFi.h>
+#include <StatusLed.h>
 #include <WiFiClient.h>
 
 // https://arduinojson.org/?utm_source=meta&utm_medium=library.properties
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
+#include "MqttClient.h"
 #include "SetupPage.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
@@ -23,17 +25,23 @@ String MqttPwd;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotBarrier", eepromConfig, server, LED_BUILTIN);
+SetupPage setupWiFi("Barrier", eepromConfig, server, STATUS_LED_PIN);
 
-StatusLed statusLed(LED_BUILTIN, 500);
+StatusLed statusLed(STATUS_LED_PIN, 500);
 CPushButton pushButton(D5, LOW);
+
+PicoMQTT::Client espMQTTClient;
 
 #include "Ampel.h"
 
+extern MqttClient mqttClient;
+
 Ampel ampel[] = {
-    Ampel(D1, D2, D3, 0),
-    Ampel(D6, D7, D8, 1),
+    Ampel(mqttClient, D1, D2, D3, 0),
+    Ampel(mqttClient, D6, D7, D8, 1),
 };
+
+MqttClient mqttClient(espMQTTClient, ampel);
 
 void setup(void)
 {
@@ -51,9 +59,19 @@ void setup(void)
   MqttPwd = configString[EConfigEEpromIdx::MqttPwdIdx];
 
   ArduinoOTA.setHostname(DeviceName.c_str());
-  client.enableOTA("Robot");  
-  client.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
-  client.enableDebuggingMessages(); // Enable debugging messages sent to serial output
+  ArduinoOTA.setPassword("Robot");
+  ArduinoOTA.begin();
+
+  espMQTTClient.host = MqttBroker.c_str();
+  espMQTTClient.username = MqttUser.c_str();
+  espMQTTClient.password = MqttPwd.c_str();
+  espMQTTClient.client_id = DeviceName.c_str();
+  mqttClient.onConnectionEstablished();
+
+  espMQTTClient.begin();
+  // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
+  // espMQTTClient.setMqttClientName(DeviceName.c_str());
+  // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
 
   for (uint8_t i = 0; i < sizeof(ampel) / sizeof(Ampel); i++)
   {
@@ -64,9 +82,10 @@ void setup(void)
 
 void loop(void)
 {
-  MqttClientloop();
+  mqttClient.MqttClientloop();
   server.handleClient();
   statusLed.Loop();
+  ArduinoOTA.handle();
 
   for (uint8_t i = 0; i < sizeof(ampel) / sizeof(Ampel); i++)
   {

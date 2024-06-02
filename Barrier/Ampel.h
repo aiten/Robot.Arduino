@@ -12,21 +12,7 @@
 class Ampel
 {
 public:
-  enum Phases
-  {
-    Red = 0,
-    RedYellow,
-    Green,
-    GreenBlinkOff1,
-    GreenBlinkOn1,
-    GreenBlinkOff2,
-    GreenBlinkOn2,
-    GreenBlinkOff3,
-    GreenBlinkOn3,
-    GreenBlinkOff4,
-    GreenBlinkOn4,
-    Yellow
-  };
+  enum Phases { Red = 0, RedYellow, Green, GreenBlinkOff1, GreenBlinkOn1, GreenBlinkOff2, GreenBlinkOn2, GreenBlinkOff3, GreenBlinkOn3, GreenBlinkOff4, GreenBlinkOn4, Yellow };
 
 private:
   uint8_t _redPin;
@@ -50,8 +36,10 @@ private:
 
   static Phase _phases[];
 
+  class MqttClient &_mqttClient;
+
 public:
-  Ampel(uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t index)
+  Ampel(class MqttClient &mqttClient, uint8_t redPin, uint8_t yellowPin, uint8_t greenPin, uint8_t index) : _mqttClient(mqttClient)
   {
     _redPin = redPin;
     _yellowPin = yellowPin;
