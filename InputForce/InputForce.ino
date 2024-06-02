@@ -11,7 +11,7 @@
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
-#include "DistanceSensor.h"
+#include "ForceSensor.h"
 #include "MqttClient.h"
 #include "SetupPage.h"
 
@@ -26,18 +26,15 @@ String SendTo;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotSonicInput", eepromConfig, server, STATUS_LED_PIN);
+SetupPage setupWiFi("InputForce", eepromConfig, server, STATUS_LED_PIN);
 
 StatusLed statusLed(STATUS_LED_PIN, 500);
-
-HCSr04 sensor1(D1, D2);
-HCSr04 sensor2(D5, D6);
 
 PicoMQTT::Client espMQTTClient;
 
 MqttClient mqttClient(espMQTTClient);
 
-DistanceSensor distanceSensor(mqttClient, statusLed);
+ForceSensor forceSensor(mqttClient, statusLed);
 
 void setup(void)
 {
@@ -69,14 +66,14 @@ void setup(void)
   // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   // espMQTTClient.setMqttClientName(DeviceName.c_str());
   // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
-  distanceSensor.setupDistanceSensor();
+  forceSensor.setupForceSensor();
 }
 
 void loop(void)
 {
   mqttClient.MqttClientloop();
   server.handleClient();
-  distanceSensor.loopDistanceSensor();
+  forceSensor.loopForceSensor();
   statusLed.Loop();
   ArduinoOTA.handle();
 }

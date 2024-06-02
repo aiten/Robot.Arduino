@@ -20,7 +20,7 @@ String eepromStringBuffer[6];
 EepromConfig eepromConfig(2, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupWiFi setupWiFi("RobotBroker", eepromConfig, server);
+SetupWiFi setupWiFi("MqttBroker", eepromConfig, server);
 
 class MQTT : public PicoMQTT::Server
 {

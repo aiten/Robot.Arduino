@@ -11,8 +11,7 @@
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
-#include "ForceSensor.h"
-#include "MqttClient.h"
+#include "MPU6050.h"
 #include "SetupPage.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
@@ -26,7 +25,7 @@ String SendTo;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotForceInput", eepromConfig, server, STATUS_LED_PIN);
+SetupPage setupWiFi("InputGyro", eepromConfig, server, STATUS_LED_PIN);
 
 StatusLed statusLed(STATUS_LED_PIN, 500);
 
@@ -34,11 +33,13 @@ PicoMQTT::Client espMQTTClient;
 
 MqttClient mqttClient(espMQTTClient);
 
-ForceSensor forceSensor(mqttClient, statusLed);
+MPU6050 mpu6050(mqttClient, statusLed);
 
 void setup(void)
 {
-  Serial.begin(115200); // Initialising if(DEBUG)Serial Monitor
+#if !defined(DONOTUSESERIAL) // use RX,TX on esp01
+  Serial.begin(115200);      // Initialising if(DEBUG)Serial Monitor
+#endif
 
   EEPROM.begin(512);
 
@@ -66,14 +67,14 @@ void setup(void)
   // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   // espMQTTClient.setMqttClientName(DeviceName.c_str());
   // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
-  forceSensor.setupForceSensor();
+  mpu6050.setupMPU6050();
 }
 
 void loop(void)
 {
   mqttClient.MqttClientloop();
   server.handleClient();
-  forceSensor.loopForceSensor();
+  mpu6050.loopMPU6050();
   statusLed.Loop();
   ArduinoOTA.handle();
 }

@@ -11,7 +11,8 @@
 // https://github.com/plapointe6/EspMQTTClient
 
 #include "Config.h"
-#include "MPU6050.h"
+#include "DistanceSensor.h"
+#include "MqttClient.h"
 #include "SetupPage.h"
 
 String eepromStringBuffer[EConfigEEpromIdx::SizeIdx];
@@ -25,21 +26,22 @@ String SendTo;
 EepromConfig eepromConfig(EConfigEEpromIdx::SizeIdx, 0, eepromStringBuffer);
 
 ESP8266WebServer server(80);
-SetupPage setupWiFi("RobotGyroInput", eepromConfig, server, STATUS_LED_PIN);
+SetupPage setupWiFi("InputSonic", eepromConfig, server, STATUS_LED_PIN);
 
 StatusLed statusLed(STATUS_LED_PIN, 500);
+
+HCSr04 sensor1(D1, D2);
+HCSr04 sensor2(D5, D6);
 
 PicoMQTT::Client espMQTTClient;
 
 MqttClient mqttClient(espMQTTClient);
 
-MPU6050 mpu6050(mqttClient, statusLed);
+DistanceSensor distanceSensor(mqttClient, statusLed);
 
 void setup(void)
 {
-#if !defined(DONOTUSESERIAL) // use RX,TX on esp01
-  Serial.begin(115200);      // Initialising if(DEBUG)Serial Monitor
-#endif
+  Serial.begin(115200); // Initialising if(DEBUG)Serial Monitor
 
   EEPROM.begin(512);
 
@@ -67,14 +69,14 @@ void setup(void)
   // espMQTTClient.setMqttServer(MqttBroker.c_str(), MqttUser.c_str(), MqttPwd.c_str());
   // espMQTTClient.setMqttClientName(DeviceName.c_str());
   // espMQTTClient.enableDebuggingMessages(); // Enable debugging messages sent to serial output
-  mpu6050.setupMPU6050();
+  distanceSensor.setupDistanceSensor();
 }
 
 void loop(void)
 {
   mqttClient.MqttClientloop();
   server.handleClient();
-  mpu6050.loopMPU6050();
+  distanceSensor.loopDistanceSensor();
   statusLed.Loop();
   ArduinoOTA.handle();
 }
