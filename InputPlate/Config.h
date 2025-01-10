@@ -42,8 +42,8 @@ enum EConfigEEpromIdx {
 #endif
 
 #define MAXTIME 500
-#define MINTIME 100
-#define PRELLEN_TIME 50  // min time for on and off pin
+#define MINTIME 50
+#define PRELLEN_TIME 40  // min time for on and off pin
 
 #define HITCOUNTTURN  3 // press x times to turn left or right
 #define TIMETURN 700  // time in ms for HITCOUNTTURN

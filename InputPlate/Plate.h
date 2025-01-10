@@ -55,7 +55,7 @@ public:
     LastState
   };
 
-  EState state = WaitForLeftOn;
+  EState currentState = WaitForLeftOn;
   EState lastState = WaitForRightOff;
   long stateSinceTime = millis();
 
@@ -78,6 +78,9 @@ public:
 
     static int lPinOld = -1;
     static int rPinOld = -1;
+
+    long now = millis();
+
     int lPin = digitalRead(LEFT_PIN);
     int rPin = digitalRead(RIGHT_PIN);
 
@@ -86,11 +89,11 @@ public:
       if (lPin==HIGH) // released
       {
         static long timePinLChanged = 0;
-        long timeForLChanged = millis() - timePinLChanged;
+        long timeForLChanged = now - timePinLChanged;
 
         if (timeForLChanged > PRELLEN_TIME)
         {
-          timePinLChanged = millis();
+          timePinLChanged = now;
           lPinCount++;
           last_pinLTimes[pinLTimeIdx] = timePinLChanged;    // store abs times and not diff
           pinLTimeIdx = (pinLTimeIdx + 1) % LASTPINTIMECOUNT;
@@ -104,11 +107,11 @@ public:
       if (rPin==HIGH) // released
       {
         static long timePinRChanged = 0;
-        long timeForRChanged = millis() - timePinRChanged;
+        long timeForRChanged = now - timePinRChanged;
 
         if (timeForRChanged > PRELLEN_TIME)
         {
-          timePinRChanged = millis();
+          timePinRChanged = now;
           rPinCount++;
           last_pinRTimes[pinRTimeIdx] = timePinRChanged;    // store abs times and not diff
           pinRTimeIdx = (pinRTimeIdx + 1) % LASTPINTIMECOUNT;
@@ -124,25 +127,36 @@ public:
 
     static int lastSpeed = 0;
 
+    long now = millis();
+
+    static long timeLastCalc = 0;
+    const int MinTimeCall = 2; // 2 ms
+
+    if (now - timeLastCalc  <= MinTimeCall)
+    {
+      return lastSpeed;
+    }
+    timeLastCalc = now;
+
     static int pinForState[] = {LEFT_PIN, RIGHT_PIN, RIGHT_PIN, LEFT_PIN};
     static int waitForState[] = {LOW, HIGH, LOW, HIGH};
 
-    if (digitalRead(pinForState[state]) == waitForState[state])
+    if (digitalRead(pinForState[currentState]) == waitForState[currentState])
     {
-      state = (EState)((state + 1) % LastState);
-      long timeInState = millis() - stateSinceTime;
-      stateSinceTime = millis();
+      currentState = (EState)((currentState + 1) % LastState);
+      long timeInState = now - stateSinceTime;
+      stateSinceTime = now;
 
-      if (state == WaitForRightOff || state == WaitForLeftOff)
+      if (currentState == WaitForRightOff || currentState == WaitForLeftOff)
       {
         static long stepSinceTime = 0;
-        long timeStep = millis() - stepSinceTime;
-        stepSinceTime = millis();
+        long timeStep = now - stepSinceTime;
+        stepSinceTime = now;
 
         last_stepTimes[stepTimeIdx] = timeStep;
         stepTimeIdx = (stepTimeIdx + 1) % LASTTIMECOUNT;
 
-        int totalTime=0;
+        long totalTime=0;
 
         for (int i = 0; i < LASTTIMECOUNT; ++i) 
         {
@@ -153,22 +167,23 @@ public:
           }
         }
 
-        int avgTime = totalTime / LASTTIMECOUNT;
-        lastSpeed = map(avgTime,MAXTIME,MINTIME,MIN_SPEED,MAX_SPEED);
-        
-        if (lastSpeed > MAX_SPEED) 
+        long avgTime = totalTime / LASTTIMECOUNT;
+
+        if (avgTime > MAXTIME)
         {
-          lastSpeed = MAX_SPEED;
+          avgTime = MAXTIME;
         }
-        if (lastSpeed < 0) 
+        else if (avgTime < MINTIME)
         {
-          lastSpeed = 0;
+          avgTime = MINTIME;
         }
+
+        lastSpeed = map((int)avgTime,MAXTIME,MINTIME,MIN_SPEED,MAX_SPEED);
       }
     }
     else
     {
-      if (millis() - stateSinceTime > MAXTIME)
+      if (now - stateSinceTime > MAXTIME)
       {
         // NoChange();
         lastSpeed = 0;
@@ -190,7 +205,6 @@ public:
     int direction=0;
     int speed = calcSpeed();
 
-
     static long until = 0;
     static bool isOn = PUSHBUTTON_ISON;
     static CPushButton pushButton(PUSHBUTTON_PIN, LOW);
@@ -203,21 +217,23 @@ public:
       _statusLed.SetLed(isOn, 100000000);
     }
 
-    if (millis() < until || !isOn)
+    long now = millis();
+
+    if (now < until || !isOn)
     {
       return;
     }
 
-    until = millis() + SEND_INTERVAL;
+    until = now + SEND_INTERVAL;
 
     // check for move left/right
     if (speed == 0)
     {
-      long timeTurnL = millis() - last_pinLTimes[(pinLTimeIdx - HITCOUNTTURN + LASTPINTIMECOUNT) % LASTPINTIMECOUNT];
-      long timeTurnR = millis() - last_pinRTimes[(pinRTimeIdx - HITCOUNTTURN + LASTPINTIMECOUNT) % LASTPINTIMECOUNT];
+      long timeTurnL = now - last_pinLTimes[(pinLTimeIdx - HITCOUNTTURN + LASTPINTIMECOUNT) % LASTPINTIMECOUNT];
+      long timeTurnR = now - last_pinRTimes[(pinRTimeIdx - HITCOUNTTURN + LASTPINTIMECOUNT) % LASTPINTIMECOUNT];
 
-      long timeLastL = millis() - last_pinLTimes[pinLTimeIdx];
-      long timeLastR = millis() - last_pinRTimes[pinRTimeIdx];
+      long timeLastL = now - last_pinLTimes[pinLTimeIdx];
+      long timeLastR = now - last_pinRTimes[pinRTimeIdx];
       
       if (timeTurnL  < TIMETURN && timeLastR > TIMETURN)
       {
